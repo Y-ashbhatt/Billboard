@@ -11,7 +11,8 @@ const SuccessPage = () => {
         Your Billboard is Ready!
       </h1>
       <p className="text-lg text-black mb-8 max-w-lg">
-        Your image has been processed successfully. You can now preview or download the updated image.
+        Your image has been processed successfully. You can now preview or
+        download the updated image.
       </p>
       <Button
         label="Preview"
