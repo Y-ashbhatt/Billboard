@@ -1,10 +1,10 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home/Home'
-import UploadBillboard from './pages/UploadBillboard.jsx/UploadBillboard'
+import UploadBillboard from './pages/UploadBillboard/UploadBillboard'
 import UploadBanner from './pages/UploadBanner/UploadBanner'
 import SuccessPage from './pages/SuccessPage/SuccessPage.'
-import PreviewPage from './pages/PreviewPage.jsx/PreviewPage'
+import PreviewPage from './pages/PreviewPage/PreviewPage'
 import LogIn from "./pages/logIn/LogIn";
 import SignUp from "./pages/signUp/SignUp";
 
