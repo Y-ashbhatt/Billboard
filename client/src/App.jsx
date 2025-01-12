@@ -5,6 +5,8 @@ import UploadBillboard from './pages/UploadBillboard.jsx/UploadBillboard'
 import UploadBanner from './pages/UploadBanner/UploadBanner'
 import SuccessPage from './pages/SuccessPage/SuccessPage.'
 import PreviewPage from './pages/PreviewPage.jsx/PreviewPage'
+import LogIn from "./pages/logIn/LogIn";
+import SignUp from "./pages/signUp/SignUp";
 
 const App = () => {
   return (
@@ -17,6 +19,9 @@ const App = () => {
       <Route path='/upload-banner' element={<UploadBanner/>} />
       <Route path='/success' element={<SuccessPage/>} />
       <Route path='/preview' element={<PreviewPage/>} />
+      <Route path="/signin" element={<LogIn />} />
+      {/* <Route path="/home" element={<Home />} /> */}
+      <Route path="/signup" element={<SignUp />} />
     </Routes>
     </main>
     </>
