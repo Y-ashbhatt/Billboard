@@ -7,13 +7,14 @@ import SuccessPage from "./pages/SuccessPage/SuccessPage";
 import PreviewPage from "./pages/PreviewPage/PreviewPage";
 import LogIn from "./pages/logIn/LogIn";
 import SignUp from "./pages/signUp/SignUp";
+import GetStarted from "./pages/getStarted/GetStarted";
 
 const App = () => {
   const location = useLocation();
 
   // List of routes where the <main> styling is required
   const mainStyledRoutes = [
-    "/",
+    "/home",
     "/upload-billboard",
     "/upload-banner",
     "/success",
@@ -28,7 +29,7 @@ const App = () => {
           className={`h-screen w-screen bg-[url('/back.png')] bg-cover bg-center flex flex-col items-center justify-center`}
         >
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/upload-billboard" element={<UploadBillboard />} />
             <Route path="/upload-banner" element={<UploadBanner />} />
             <Route path="/success" element={<SuccessPage />} />
@@ -37,7 +38,8 @@ const App = () => {
         </main>
       ) : (
         <Routes>
-          <Route path="/signin" element={<LogIn />} />
+          <Route path="/Login" element={<LogIn />} />
+          <Route path="/" element={<GetStarted />} />
           <Route path="/signup" element={<SignUp />} />
         </Routes>
       )}
