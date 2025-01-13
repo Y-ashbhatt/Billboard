@@ -7,6 +7,7 @@ import SuccessPage from "./pages/SuccessPage/SuccessPage";
 import PreviewPage from "./pages/PreviewPage/PreviewPage";
 import LogIn from "./pages/logIn/LogIn";
 import SignUp from "./pages/signUp/SignUp";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 const App = () => {
   const location = useLocation();
@@ -39,6 +40,7 @@ const App = () => {
         <Routes>
           <Route path="/signin" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       )}
     </>
