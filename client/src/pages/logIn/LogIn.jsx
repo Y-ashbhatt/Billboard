@@ -101,7 +101,7 @@ const LogIn = () => {
           Don't have an account?{" "}
           <button
             type="button"
-            className="text-blue-500 ml-2 hover:underline"
+            className="text-blue-500 ml-1 hover:underline"
             onClick={handleSignUpRedirect}
           >
             Sign Up
