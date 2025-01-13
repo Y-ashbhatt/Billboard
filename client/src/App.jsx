@@ -7,6 +7,7 @@ import SuccessPage from "./pages/SuccessPage/SuccessPage";
 import PreviewPage from "./pages/PreviewPage/PreviewPage";
 import LogIn from "./pages/logIn/LogIn";
 import SignUp from "./pages/signUp/SignUp";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import GetStarted from "./pages/getStarted/GetStarted";
 
 const App = () => {
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/Login" element={<LogIn />} />
           <Route path="/" element={<GetStarted />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       )}
     </>
