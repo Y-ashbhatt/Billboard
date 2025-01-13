@@ -11,7 +11,7 @@ const LogIn = () => {
     // Add your login logic here (e.g., API call)
     if (email && password) {
       console.log("Logged in:", { email, password });
-      navigate("/home"); // Redirect to Home page
+      navigate("/dashboard"); // Redirect to Home page
     } else {
       alert("Please fill in all fields.");
     }
