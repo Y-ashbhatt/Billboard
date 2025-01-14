@@ -7,22 +7,21 @@ const Dashboard = () => {
   const finalImage = "./preview.jpg";
   const pictureSVG = "./picture.svg";
   const ChatGptCredits = "./ChatGptCredits.svg";
-  const tasksSVG = "./tasks.svg";
   const settingsSVG = "./settings.svg";
   const creditsSVG = "./credits.svg";
   return (
     <div className="bg-gray-100 min-h-screen flex">
       {/* Sidebar */}
-      <aside className="w-50">
+      <aside className="w-50 fixed">
         <nav className="mt-16">
           <ul className="space-y-2">
             <li className="px-6">
               <a
                 href="#"
                 className="w-fit flex items-center p-2 hover:bg-gray-200 rounded-lg"
-                title="Task"
+                title="Dashboard"
               >
-                <img className="w-9 h-9" src={tasksSVG} alt="Tasks" />
+                <img className="w-9 h-9" src='/dashboard.svg' alt="Dashboard" />
                 {/* <span className="ml-3 text-gray-700 font-semibold">Tasks</span> */}
               </a>
             </li>
@@ -72,7 +71,7 @@ const Dashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="mr-10 ml-10 flex-1 p-6">
+      <main className="mr-10 ml-28 flex-1 p-6">
         {/* Header */}
         <header className="flex justify-between items-center mb-6">
           {/* Search Bar */}
