@@ -57,7 +57,7 @@ const Dashboard = () => {
             />
           </div>
         </div> */}
-        <div className="mt-96 p-4">
+        <div className="mt-96 px-6 py-4">
           <div className="">
             <a
               href="/"
