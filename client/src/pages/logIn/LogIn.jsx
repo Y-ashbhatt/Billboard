@@ -26,10 +26,10 @@ const LogIn = () => {
       className="flex  items-center justify-center min-h-screen bg-cover bg-center"
       style={{ backgroundImage: "url('/Login.jpeg')" }} // Corrected image path
     >
-      <div className="bg-white w-[480px] py-16 px-12 shadow-lg   rounded-2xl  ">
+      <div className="bg-white w-96 py-12 px-12 shadow-lg   rounded-2xl  ">
         {/* Header */}
-        <h1 className="text-[45px] font-normal text-gray-900 mb-2">Log In</h1>
-        <p className="text-gray-600 mt-4 text-base  mb-12">
+        <h1 className="text-4xl font-normal text-gray-900 mb-2">Log In</h1>
+        <p className="text-gray-600 mt-2 text-base  mb-8">
           Enter your details to continue
         </p>
 
@@ -38,7 +38,7 @@ const LogIn = () => {
           {/* Email Input */}
           <label
             htmlFor="email"
-            className="mb-3 text-lg font-medium text-gray-700"
+            className="mb-1 text-base font-medium text-gray-700"
           >
             Enter your email
           </label>
@@ -46,7 +46,7 @@ const LogIn = () => {
             type="email"
             id="email"
             placeholder="Email"
-            className="p-3 mb-6 text-lg text-gray-900 bg-[#F7F2FA] rounded-lg  border-b border-[#6750A4] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="p-2 mb-6 text-base text-gray-900 bg-[#F7F2FA] rounded-lg  border-b border-[#6750A4] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -54,7 +54,7 @@ const LogIn = () => {
           {/* Password Input */}
           <label
             htmlFor="password"
-            className="mb-3 text-lg font-medium text-gray-700"
+            className="mb-1 text-base font-medium text-gray-700"
           >
             Enter your password
           </label>
@@ -62,13 +62,13 @@ const LogIn = () => {
             type="password"
             id="password"
             placeholder="Password"
-            className="p-3 mb-8 text-lg text-gray-900 bg-[#F7F2FA] rounded-lg border-b border-[#6750A4] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="p-2 mb-6 text-base text-gray-900 bg-[#F7F2FA] rounded-lg border-b border-[#6750A4] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
           {/* Remember Me & Forgot Password */}
-          <div className="flex  items-center justify-between mb-8">
+          <div className="flex  items-center justify-between mb-6">
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -77,12 +77,12 @@ const LogIn = () => {
               />
               <label
                 htmlFor="rememberMe"
-                className="ml-2 text-lg text-gray-700"
+                className="ml-2 text-sm text-gray-700"
               >
                 Remember Me
               </label>
             </div>
-            <a href="#" className="text-lg text-blue-500 hover:underline">
+            <a href="#" className="text-sm text-blue-500 hover:underline">
               Forgot Password?
             </a>
           </div>
@@ -90,14 +90,14 @@ const LogIn = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-[#420d8b] text-white py-3 rounded-full text-lg font-medium shadow-md focus:outline-none focus:ring-2  focus:ring-offset-2"
+            className="w-full bg-[#420d8b] text-white py-2 rounded-full text-sm font-medium shadow-md focus:outline-none focus:ring-2  focus:ring-offset-2"
           >
             Log In
           </button>
         </form>
 
         {/* Sign Up Redirect */}
-        <p className="mt-8 font-semibold text-lg  text-slate-500">
+        <p className="mt-6 font-semibold text-sm  text-slate-500">
           Don't have an account?{" "}
           <button
             type="button"
