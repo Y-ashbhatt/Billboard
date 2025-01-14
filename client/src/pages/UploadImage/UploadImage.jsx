@@ -63,16 +63,27 @@ const UploadImage = () => {
     if (!billboard) {
       showNotification("Please upload a billboard image before proceeding.");
     } else {
-      setCurrentStep(2);
+      setLoading(true)
+      setTimeout(() => {
+        setCurrentStep(2);
+        setLoading(false)
+      }, 6500);
     }
   };
 
   const handleSubmit = () => {
     if (!banner) {
       showNotification("Please upload a banner image to proceed.");
-      return;
+      // return;
+    } else {
+      // fetchData();
+      setLoading(true)
+      setTimeout(() => {
+        setCurrentStep(2);
+        setLoading(false)
+        navigate('/success')
+      }, 6500);
     }
-    fetchData();
   };
 
   return (
@@ -82,11 +93,11 @@ const UploadImage = () => {
         <aside className="w-50">
           <div className="p-4 mt-6 flex items-center justify-center">
             <div className="w-20 h-20 rounded-full text-white flex items-center justify-center font-bold">
-              <img
-                className="w-20 h-20 rounded-full"
-                src={finalImage}
-                alt="Profile"
-              />
+            <img
+              className="w-16 h-16 rounded-full"
+              src='/account.svg'
+              alt="Profile"
+            />
             </div>
           </div>
           <nav className="mt-6">
@@ -151,16 +162,16 @@ const UploadImage = () => {
             </button>
           </header>
 
-          <div className="flex mt-2 mb-6">
+          {/* <div className="flex mt-2 mb-6">
             <h1 className="text-3xl">Upload Image</h1>
-          </div>
+          </div> */}
           {error && (
             <Error errorMsg="Sorry, Some Internal server error has occured, Please try later" />
           )}
           {!error && (
-            <div className=" mt-32 flex flex-col items-center justify-center">
+            <div className=" mt-10 flex flex-col items-center justify-center">
               {currentStep === 1 && (
-                <div className="bg-white/50 backdrop-blur-md rounded-lg p-8 max-w-lg text-center shadow-lg">
+                <div className="bg-white/50 border-2 border-gray-200 backdrop-blur-md rounded-lg p-8 max-w-lg text-center shadow-lg">
                   <h1 className="text-3xl text-gray-800 font-bold mb-4">
                     Upload Billboard Image
                   </h1>
@@ -176,38 +187,54 @@ const UploadImage = () => {
                   />
 
                   <Button
-                    label="Next"
+                    label={loading ? "Processing..." : "Process with AI"}
                     onClick={handleNextClick}
-                    className="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-blue-700"
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    disabled={loading}
                   />
                 </div>
               )}
 
               {currentStep === 2 && (
-                <div className="bg-white/50 backdrop-blur-md rounded-lg p-8 max-w-lg text-center shadow-lg">
-                  <h1 className="text-3xl text-gray-800 font-bold mb-4">
-                    Upload Banner Image
-                  </h1>
-                  <p className="text-lg text-gray-600 mb-6">
-                    Select the banner image you want to place on the billboard.
-                    Once uploaded, you can proceed to process it with AI.
-                  </p>
+                <div className="max-w-[1450px] flex flex-col items-center gap-16">
+                  <figure className="w-full flex justify-between gap-16">
+                    <div className="text-center">
+                      <img src="/billboardimg.jpeg" alt="Source Image" className="h-[300px] rounded-lg" />
+                      <figcaption className="mt-2 text-lg font-medium">Source Image</figcaption>
+                    </div>
+                    <div className="text-center">
+                      <img src="/billboardsegment.jpeg" alt="Segmented Image" className="h-[300px] rounded-lg" />
+                      <figcaption className="mt-2 text-lg font-medium">Segemented Image</figcaption>
+                    </div>
+                  </figure>
 
-                  <FileUploader
-                    label="Choose Banner Image"
-                    onFileChange={(file) => setBanner(file)}
-                  />
+                  <div className="bg-white/50 border-2 border-gray-200 backdrop-blur-md rounded-lg p-8 max-w-lg text-center shadow-lg">
+                    <h1 className="text-3xl text-gray-800 font-bold mb-4">
+                      Upload Banner Image
+                    </h1>
+                    <p className="text-lg text-gray-600 mb-6">
+                      Select the banner image you want to place on the billboard.
+                      Once uploaded, you can proceed to process it with AI.
+                    </p>
 
-                  <Button
-                    label={loading ? "Processing..." : "Process with AI"}
-                    onClick={handleSubmit}
-                    className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${
-                      loading
+                    <FileUploader
+                      label="Choose Banner Image"
+                      onFileChange={(file) => setBanner(file)}
+                    />
+
+                    <Button
+                      label={loading ? "Just a moment, Processing..." : "Process with AI"}
+                      onClick={handleSubmit}
+                      className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
                         ? "opacity-50 cursor-not-allowed"
                         : "hover:bg-blue-700"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    disabled={loading}
-                  />
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      disabled={loading}
+                    />
+                  </div>
                 </div>
               )}
             </div>

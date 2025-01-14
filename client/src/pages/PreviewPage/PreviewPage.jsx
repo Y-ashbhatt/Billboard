@@ -1,7 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const PreviewPage = () => {
-  const finalImage = "./preview.jpg";
+  const finalImage = "./processedimg.jpeg";
 
   const pictureSVG = "./picture.svg";
   const HTMLmockups = "./HTMLmockups.svg";
@@ -9,6 +10,8 @@ const PreviewPage = () => {
   const tasksSVG = "./tasks.svg";
   const settingsSVG = "./settings.svg";
   const creditsSVG = "./credits.svg";
+
+  const navigate = useNavigate('/upload')
 
   const handleDownload = () => {
     const link = document.createElement("a");
@@ -24,8 +27,8 @@ const PreviewPage = () => {
         <div className="p-4 mt-6 flex items-center justify-center">
           <div className="w-20 h-20 rounded-full text-white flex items-center justify-center font-bold">
             <img
-              className="w-20 h-20 rounded-full"
-              src={finalImage}
+              className="w-16 h-16 rounded-full"
+              src='/account.svg'
               alt="Profile"
             />
           </div>
@@ -57,7 +60,7 @@ const PreviewPage = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 ">
         {/* Header */}
         <header className="flex justify-between items-center mb-6">
           {/* Search Bar */}
@@ -91,15 +94,15 @@ const PreviewPage = () => {
             Create Task
           </button>
         </header>
-
+      <div className="block mx-auto w-fit ">
         <div className="flex mt-2 mb-6">
-          <h1 className="text-3xl">Download Billboard</h1>
+          <h1 className="text-3xl text-center w-full font-bold">Download Billboard</h1>
         </div>
         {/* Image Preview */}
         {finalImage ? (
           <img
             src={finalImage}
-            alt="Preview"
+            alt="Processed Image"
             className="w-full max-w-lg rounded-lg shadow-lg mb-6"
           />
         ) : (
@@ -110,10 +113,11 @@ const PreviewPage = () => {
         {/* Download Button */}
         <button
           onClick={handleDownload}
-          className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow transition-all"
+          className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl shadow transition-all block mx-auto"
         >
           Download Image
         </button>
+        </div>
       </main>
     </div>
   );

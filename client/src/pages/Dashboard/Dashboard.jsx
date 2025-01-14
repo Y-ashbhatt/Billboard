@@ -17,9 +17,9 @@ const Dashboard = () => {
       <aside className="w-50">
         <div className="p-4 mt-6 flex items-center justify-center">
           <div className="w-20 h-20 rounded-full text-white flex items-center justify-center font-bold">
-            <img
-              className="w-20 h-20 rounded-full"
-              src={finalImage}
+          <img
+              className="w-16 h-16 rounded-full"
+              src='/account.svg'
               alt="Profile"
             />
           </div>
