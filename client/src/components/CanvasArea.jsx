@@ -13,8 +13,6 @@ const FabricCanvas = () => {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [alignment, setAlignment] = useState("left");
-  const [history, setHistory] = useState([]);
-  const [redoStack, setRedoStack] = useState([]);
 
   useEffect(() => {
     const newCanvas = new fabric.Canvas(canvasRef.current, {
@@ -24,50 +22,13 @@ const FabricCanvas = () => {
     });
     setCanvas(newCanvas);
 
-    newCanvas.on("object:modified", saveHistory);
-    newCanvas.on("object:added", saveHistory);
     newCanvas.on("object:selected", updateActiveObjectProperties);
     newCanvas.on("selection:updated", updateActiveObjectProperties);
 
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.key === "z") {
-        e.preventDefault();
-        undo();
-      } else if (e.ctrlKey && e.key === "y") {
-        e.preventDefault();
-        redo();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       newCanvas.dispose();
-      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  const saveHistory = () => {
-    setRedoStack([]);
-    setHistory((prev) => [...prev, JSON.stringify(canvas)]);
-  };
-
-  const undo = () => {
-    if (history.length > 0) {
-      const lastState = history.pop();
-      setRedoStack((prev) => [...prev, JSON.stringify(canvas)]);
-      setHistory([...history]);
-      canvas.loadFromJSON(lastState, () => canvas.renderAll());
-    }
-  };
-
-  const redo = () => {
-    if (redoStack.length > 0) {
-      const nextState = redoStack.pop();
-      setHistory((prev) => [...prev, JSON.stringify(canvas)]);
-      canvas.loadFromJSON(nextState, () => canvas.renderAll());
-    }
-  };
 
   const updateActiveObjectProperties = () => {
     const activeObject = canvas.getActiveObject();
@@ -225,9 +186,9 @@ const FabricCanvas = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-4">
+    <div className="flex p-4">
       {/* Toolbar */}
-      <div className="mb-4 flex flex-wrap items-center gap-2 bg-gray-100 p-2 rounded shadow">
+      <div className="mb-4 flex flex-col items-center gap-2 bg-gray-100 p-2 rounded shadow">
         {/* Add Elements */}
         <button
           onClick={addText}
