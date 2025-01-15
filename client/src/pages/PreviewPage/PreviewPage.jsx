@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
 
 const PreviewPage = () => {
   const finalImage = "./processedimg.jpeg";
@@ -23,72 +24,14 @@ const PreviewPage = () => {
   return (
     <div className="bg-gray-100 min-h-screen flex">
       {/* Sidebar */}
-      <aside className="w-50 fixed">
-        <nav className="mt-16">
-          <ul className="space-y-2">
-            <li className="px-6">
-              <a
-                href="#"
-                className="w-fit flex items-center p-2 hover:bg-gray-200 rounded-lg"
-                title="Dashboard"
-              >
-                <img className="w-9 h-9" src='/dashboard.svg' alt="Dashboard" />
-                {/* <span className="ml-3 text-gray-700 font-semibold">Tasks</span> */}
-              </a>
-            </li>
-            <li className="px-6">
-              <a
-                href="#"
-                className="w-fit flex items-center p-2 hover:bg-gray-200 rounded-lg"
-                title="Settings"
-              >
-                <img className="w-9 h-9" src={settingsSVG} alt="Settings" />
-                {/* <span className="ml-3 text-gray-700 font-semibold">Settings</span> */}
-              </a>
-            </li>
-            <li className="px-6">
-              <a
-                href="#"
-                className="w-fit flex items-center p-2 hover:bg-gray-200 rounded-lg"
-                title="Profile"
-              >
-                <img className="w-9 h-9" src='/account.svg' alt="Profile" />
-                {/* <span className="ml-3 text-gray-700 font-semibold">Settings</span> */}
-              </a>
-            </li>
-          </ul>
-        </nav>
-        {/* <div className="p-4 flex items-center justify-center">
-          <div className="w-16 h-16 text-white flex items-center justify-center font-bold">
-            <img
-              className="w-16 h-16 rounded-full"
-              src='/account.svg'
-              alt="Profile"
-            />
-          </div>
-        </div> */}
-        <div className="mt-96 px-6 py-4">
-          <div className="">
-            <a
-              href="/"
-              className="w-fit flex items-center p-2 hover:bg-gray-200 rounded-lg"
-              title="Logout"
-            >
-              <img className="w-9 h-9" src='/logout.svg' alt="Logout" />
-              {/* <span className="ml-3 text-gray-700 font-semibold">Settings</span> */}
-            </a>
-          </div>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
       <main className="mr-10 ml-28 flex-1 p-6">
         {/* Header */}
         <header className="flex justify-between items-center mb-6">
           {/* Search Bar */}
-          <div className="flex items-center rounded-full w-full max-w-2xl text-3xl">
-            <h1 className="text-blue-400 font-light">Create Your Own Version of Billboard with AI</h1>
-          </div>
+         
         </header>
 
         <div className="block mx-auto w-fit ">
