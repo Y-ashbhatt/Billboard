@@ -184,132 +184,182 @@ const FabricCanvas = () => {
     link.download = "canvas.png";
     link.click();
   };
+  const uploadImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        fabric.Image.fromURL(event.target.result, (img) => {
+          img.scaleToWidth(200); // Scale image to a reasonable size
+          canvas.add(img).setActiveObject(img);
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const deleteObject = () => {
+    const activeObject = canvas.getActiveObject();
+    if (activeObject) {
+      canvas.remove(activeObject);
+    }
+  };
 
   return (
     <div className="flex p-4">
       {/* Toolbar */}
-      <div className="mb-4 flex flex-col items-center gap-2 bg-gray-100 p-2 rounded shadow">
-        {/* Add Elements */}
-        <button
-          onClick={addText}
-          className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Add Text
-        </button>
-        <button
-          onClick={addRectangle}
-          className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Add Rectangle
-        </button>
-        <button
-          onClick={addCircle}
-          className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-        >
-          Add Circle
-        </button>
-
-        {/* Font Controls */}
-        <div className="flex items-center space-x-1">
-          <label>Font Size:</label>
-          <input
-            type="number"
-            value={fontSize}
-            onChange={(e) => updateFontSize(Number(e.target.value))}
-            className="w-14 px-2 py-1 border rounded"
-          />
-        </div>
-        <div className="flex items-center space-x-1">
-          <label>Font:</label>
-          <select
-            value={fontFamily}
-            onChange={(e) => updateFontFamily(e.target.value)}
-            className="px-2 py-1 border rounded"
+      <div className="mb-4 flex flex-col gap-4 bg-gray-100 p-4 rounded shadow">
+        {/* Elements Section */}
+        <div className="flex flex-col gap-2">
+          <h3 className="font-bold text-lg">Elements</h3>
+          <button
+            onClick={addText}
+            className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            <option value="Arial">Arial</option>
-            <option value="Courier New">Courier New</option>
-            <option value="Georgia">Georgia</option>
-            <option value="Times New Roman">Times New Roman</option>
-            <option value="Verdana">Verdana</option>
-          </select>
-        </div>
-        <div className="flex items-center space-x-1">
-          <label>Font Color:</label>
-          <input
-            type="color"
-            value={fontColor}
-            onChange={(e) => updateFontColor(e.target.value)}
-            className="px-2 py-1 border rounded"
-          />
-        </div>
-
-        {/* Shape Controls */}
-        <div className="flex items-center space-x-1">
-          <label>Fill Color:</label>
-          <input
-            type="color"
-            value={fillColor}
-            onChange={(e) => updateFillColor(e.target.value)}
-            className="px-2 py-1 border rounded"
-          />
-        </div>
-        <div className="flex items-center space-x-1">
-          <label>Stroke Color:</label>
-          <input
-            type="color"
-            value={strokeColor}
-            onChange={(e) => updateStrokeColor(e.target.value)}
-            className="px-2 py-1 border rounded"
-          />
-        </div>
-
-        {/* Style Controls */}
-        <button
-          onClick={toggleBold}
-          className={`px-2 py-1 rounded ${
-            isBold ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          B
-        </button>
-        <button
-          onClick={toggleItalic}
-          className={`px-2 py-1 rounded ${
-            isItalic ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          I
-        </button>
-        <button
-          onClick={toggleUnderline}
-          className={`px-2 py-1 rounded ${
-            isUnderline ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          U
-        </button>
-
-        {/* Alignment */}
-        <div className="flex items-center space-x-1">
-          <label>Alignment:</label>
-          <select
-            value={alignment}
-            onChange={(e) => updateAlignment(e.target.value)}
-            className="px-2 py-1 border rounded"
+            Add Text
+          </button>
+          <button
+            onClick={addRectangle}
+            className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
           >
-            <option value="left">Left</option>
-            <option value="center">Center</option>
-            <option value="right">Right</option>
-          </select>
+            Add Rectangle
+          </button>
+          <button
+            onClick={addCircle}
+            className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+          >
+            Add Circle
+          </button>
+          <div>
+            <label
+              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor="imageUpload"
+            >
+              Upload Image:
+            </label>
+            <input
+              id="imageUpload"
+              type="file"
+              accept="image/*"
+              onChange={(e) => uploadImage(e)}
+              className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:outline-none"
+            />
+          </div>
         </div>
 
-        {/* Export */}
-        <button
-          onClick={exportCanvas}
-          className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-        >
-          Export
-        </button>
+        {/* Text Settings Section */}
+        <div className="flex flex-col gap-2">
+          <h3 className="font-bold text-lg">Text Settings</h3>
+          <div className="flex items-center space-x-2">
+            <label>Font Size:</label>
+            <input
+              type="number"
+              value={fontSize}
+              onChange={(e) => updateFontSize(Number(e.target.value))}
+              className="w-16 px-2 py-1 border rounded"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <label>Font:</label>
+            <select
+              value={fontFamily}
+              onChange={(e) => updateFontFamily(e.target.value)}
+              className="px-2 py-1 border rounded"
+            >
+              <option value="Arial">Arial</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Georgia">Georgia</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Verdana">Verdana</option>
+            </select>
+          </div>
+          <div className="flex items-center space-x-2">
+            <label>Font Color:</label>
+            <input
+              type="color"
+              value={fontColor}
+              onChange={(e) => updateFontColor(e.target.value)}
+              className="px-2 py-1 border rounded"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleBold}
+              className={`px-3 py-1 rounded ${
+                isBold ? "bg-gray-700 text-white" : "bg-gray-200"
+              }`}
+            >
+              B
+            </button>
+            <button
+              onClick={toggleItalic}
+              className={`px-3 py-1 rounded ${
+                isItalic ? "bg-gray-700 text-white" : "bg-gray-200"
+              }`}
+            >
+              I
+            </button>
+            <button
+              onClick={toggleUnderline}
+              className={`px-3 py-1 rounded ${
+                isUnderline ? "bg-gray-700 text-white" : "bg-gray-200"
+              }`}
+            >
+              U
+            </button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <label>Alignment:</label>
+            <select
+              value={alignment}
+              onChange={(e) => updateAlignment(e.target.value)}
+              className="px-2 py-1 border rounded"
+            >
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Shape Settings Section */}
+        <div className="flex flex-col gap-2">
+          <h3 className="font-bold text-lg">Shape Settings</h3>
+          <div className="flex items-center space-x-2">
+            <label>Fill Color:</label>
+            <input
+              type="color"
+              value={fillColor}
+              onChange={(e) => updateFillColor(e.target.value)}
+              className="px-2 py-1 border rounded"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <label>Stroke Color:</label>
+            <input
+              type="color"
+              value={strokeColor}
+              onChange={(e) => updateStrokeColor(e.target.value)}
+              className="px-2 py-1 border rounded"
+            />
+          </div>
+        </div>
+
+        {/* Object Controls */}
+        <div className="flex flex-col gap-2">
+          <h3 className="font-bold text-lg">Actions</h3>
+          <button
+            onClick={deleteObject}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Delete Selected Object
+          </button>
+          <button
+            onClick={exportCanvas}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Export Canvas
+          </button>
+        </div>
       </div>
 
       {/* Canvas */}
