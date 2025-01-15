@@ -85,6 +85,7 @@ const FabricCanvas = () => {
         activeObject.type === "circle"
       ) {
         setFillColor(activeObject.fill || "#00bcd4");
+        setStrokeColor(activeObject.stroke || "#000000");
       }
     }
   };
@@ -110,6 +111,7 @@ const FabricCanvas = () => {
       left: 100,
       top: 100,
       fill: fillColor,
+      stroke: strokeColor,
       width: 100,
       height: 100,
     });
@@ -121,6 +123,7 @@ const FabricCanvas = () => {
       left: 150,
       top: 150,
       fill: fillColor,
+      stroke: strokeColor,
       radius: 50,
     });
     canvas.add(circle).setActiveObject(circle);
@@ -140,6 +143,39 @@ const FabricCanvas = () => {
     const activeObject = canvas.getActiveObject();
     if (activeObject && activeObject.type === "textbox") {
       activeObject.set("fontFamily", family);
+      canvas.renderAll();
+    }
+  };
+
+  const updateFontColor = (color) => {
+    setFontColor(color);
+    const activeObject = canvas.getActiveObject();
+    if (activeObject && activeObject.type === "textbox") {
+      activeObject.set("fill", color);
+      canvas.renderAll();
+    }
+  };
+
+  const updateFillColor = (color) => {
+    setFillColor(color);
+    const activeObject = canvas.getActiveObject();
+    if (
+      activeObject &&
+      (activeObject.type === "rect" || activeObject.type === "circle")
+    ) {
+      activeObject.set("fill", color);
+      canvas.renderAll();
+    }
+  };
+
+  const updateStrokeColor = (color) => {
+    setStrokeColor(color);
+    const activeObject = canvas.getActiveObject();
+    if (
+      activeObject &&
+      (activeObject.type === "rect" || activeObject.type === "circle")
+    ) {
+      activeObject.set("stroke", color);
       canvas.renderAll();
     }
   };
@@ -191,38 +227,38 @@ const FabricCanvas = () => {
   return (
     <div className="flex flex-col items-center p-4">
       {/* Toolbar */}
-      <div className="mb-4 flex flex-wrap items-center gap-4 bg-gray-100 p-3 rounded shadow">
+      <div className="mb-4 flex flex-wrap items-center gap-2 bg-gray-100 p-2 rounded shadow">
         {/* Add Elements */}
         <button
           onClick={addText}
-          className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Add Text
         </button>
         <button
           onClick={addRectangle}
-          className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
         >
           Add Rectangle
         </button>
         <button
           onClick={addCircle}
-          className="px-3 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+          className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
         >
           Add Circle
         </button>
 
         {/* Font Controls */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <label>Font Size:</label>
           <input
             type="number"
             value={fontSize}
             onChange={(e) => updateFontSize(Number(e.target.value))}
-            className="w-16 px-2 py-1 border rounded"
+            className="w-14 px-2 py-1 border rounded"
           />
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <label>Font:</label>
           <select
             value={fontFamily}
@@ -236,63 +272,80 @@ const FabricCanvas = () => {
             <option value="Verdana">Verdana</option>
           </select>
         </div>
+        <div className="flex items-center space-x-1">
+          <label>Font Color:</label>
+          <input
+            type="color"
+            value={fontColor}
+            onChange={(e) => updateFontColor(e.target.value)}
+            className="px-2 py-1 border rounded"
+          />
+        </div>
+
+        {/* Shape Controls */}
+        <div className="flex items-center space-x-1">
+          <label>Fill Color:</label>
+          <input
+            type="color"
+            value={fillColor}
+            onChange={(e) => updateFillColor(e.target.value)}
+            className="px-2 py-1 border rounded"
+          />
+        </div>
+        <div className="flex items-center space-x-1">
+          <label>Stroke Color:</label>
+          <input
+            type="color"
+            value={strokeColor}
+            onChange={(e) => updateStrokeColor(e.target.value)}
+            className="px-2 py-1 border rounded"
+          />
+        </div>
 
         {/* Style Controls */}
         <button
           onClick={toggleBold}
-          className={`px-3 py-2 rounded ${
+          className={`px-2 py-1 rounded ${
             isBold ? "bg-gray-700 text-white" : "bg-gray-200"
           }`}
         >
-          Bold
+          B
         </button>
         <button
           onClick={toggleItalic}
-          className={`px-3 py-2 rounded ${
+          className={`px-2 py-1 rounded ${
             isItalic ? "bg-gray-700 text-white" : "bg-gray-200"
           }`}
         >
-          Italic
+          I
         </button>
         <button
           onClick={toggleUnderline}
-          className={`px-3 py-2 rounded ${
+          className={`px-2 py-1 rounded ${
             isUnderline ? "bg-gray-700 text-white" : "bg-gray-200"
           }`}
         >
-          Underline
+          U
         </button>
 
         {/* Alignment */}
-        <button
-          onClick={() => updateAlignment("left")}
-          className={`px-3 py-2 rounded ${
-            alignment === "left" ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          Left
-        </button>
-        <button
-          onClick={() => updateAlignment("center")}
-          className={`px-3 py-2 rounded ${
-            alignment === "center" ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          Center
-        </button>
-        <button
-          onClick={() => updateAlignment("right")}
-          className={`px-3 py-2 rounded ${
-            alignment === "right" ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          Right
-        </button>
+        <div className="flex items-center space-x-1">
+          <label>Alignment:</label>
+          <select
+            value={alignment}
+            onChange={(e) => updateAlignment(e.target.value)}
+            className="px-2 py-1 border rounded"
+          >
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
 
         {/* Export */}
         <button
           onClick={exportCanvas}
-          className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
         >
           Export
         </button>
