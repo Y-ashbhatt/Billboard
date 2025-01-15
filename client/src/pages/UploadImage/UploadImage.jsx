@@ -60,12 +60,12 @@ const UploadImage = () => {
     if (!billboard) {
       showNotification("Please upload a billboard image before proceeding.");
     } else {
-      fetchData();
-      // setLoading(true)
-      // setTimeout(() => {
-      //   setCurrentStep(2);
-      //   setLoading(false)
-      // }, 6500);
+      // fetchData();
+      setLoading(true)
+      setTimeout(() => {
+        setCurrentStep(2);
+        setLoading(false)
+      }, 6500);
     }
   };
 
