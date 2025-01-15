@@ -10,6 +10,7 @@ import GetStarted from "./pages/getStarted/GetStarted";
 import UploadImage from "./pages/UploadImage/UploadImage";
 import { NotificationProvider } from "./context/NotificationContext";
 import Error from "./components/Error";
+import FabricCanvas from "./components/CanvasArea";
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
           <Route path="/" element={<GetStarted />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/canvas" element={<FabricCanvas />} />
         </Routes>
       </NotificationProvider>
     </>
