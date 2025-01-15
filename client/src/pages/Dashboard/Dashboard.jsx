@@ -121,7 +121,7 @@ const Dashboard = () => {
                   <img src={pictureSVG} alt="pucture" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">250</div>
+                  <div className="text-4xl">50</div>
                   <div className="text-lg">Processed Images</div>
                 </span>
               </li>
@@ -130,8 +130,17 @@ const Dashboard = () => {
                   <img src={ChatGptCredits} alt="credits" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">45</div>
-                  <div className="text-lg">Chat GPT Credits</div>
+                  <div className="text-4xl">4</div>
+                  <div className="text-lg">Banners Created</div>
+                </span>
+              </li>
+              <li className="flex items-center bg-gray-100 rounded-2xl p-4 border-2 border-gray-200">
+                <span className="font-semibold text-gray-700 mr-7 mb-3">
+                  <img src={ChatGptCredits} alt="credits" />
+                </span>
+                <span className="">
+                  <div className="text-4xl">13</div>
+                  <div className="text-lg">Billboards Transformed</div>
                 </span>
               </li>
             </ul>
