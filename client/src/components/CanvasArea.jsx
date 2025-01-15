@@ -268,185 +268,233 @@ const FabricCanvas = () => {
       canvas.remove(activeObject);
     }
   };
+  const [isTextSettingsOpen, setTextSettingsOpen] = useState(false);
+  const [isShapeSettingsOpen, setShapeSettingsOpen] = useState(false);
+  const [isActionsOpen, setActionsOpen] = useState(true);
+  const [isElementsOpen, setElementsOpen] = useState(true); // Set Elements to be open by default
 
   return (
-    <div className="flex p-4">
+    <div className="flex p-6 space-x-6">
       {/* Toolbar */}
-      <div className="mb-4 flex flex-col gap-4 bg-gray-100 p-4 rounded shadow">
+      <div className="w-72 bg-gray-100 p-4 rounded-lg shadow-md space-y-4">
         {/* Elements Section */}
-        <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Elements</h3>
+        <div>
           <button
-            onClick={addText}
-            className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+            onClick={() => setElementsOpen(!isElementsOpen)}
+            className="w-full py-2 text-left text-lg font-semibold bg-gray-200 hover:bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
-            Add Text
+            Elements
           </button>
-          <button
-            onClick={addRectangle}
-            className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            Add Rectangle
-          </button>
-          <button
-            onClick={addCircle}
-            className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-          >
-            Add Circle
-          </button>
-          <button
-            onClick={addTriangle}
-            className="px-2 py-1 bg-purple-500 text-white rounded hover:bg-purple-600"
-          >
-            Add Triangle
-          </button>
-          <button
-            onClick={addLine}
-            className="px-2 py-1 bg-orange-500 text-white rounded hover:bg-orange-600"
-          >
-            Add Line
-          </button>
-          <button
-            onClick={addPolygon}
-            className="px-2 py-1 bg-teal-500 text-white rounded hover:bg-teal-600"
-          >
-            Add Polygon
-          </button>
-          <div>
-            <label
-              className="block text-sm font-medium text-gray-700 mb-1"
-              htmlFor="imageUpload"
-            >
-              Upload Image:
-            </label>
-            <input
-              id="imageUpload"
-              type="file"
-              accept="image/*"
-              onChange={(e) => uploadImage(e)}
-              className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:outline-none"
-            />
-          </div>
+          {isElementsOpen && (
+            <div className="space-y-2 mt-2">
+              <button
+                onClick={addText}
+                className="w-full py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                Add Text
+              </button>
+              <button
+                onClick={addRectangle}
+                className="w-full py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                Add Rectangle
+              </button>
+              <button
+                onClick={addCircle}
+                className="w-full py-2 text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              >
+                Add Circle
+              </button>
+              <button
+                onClick={addTriangle}
+                className="w-full py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              >
+                Add Triangle
+              </button>
+              <button
+                onClick={addLine}
+                className="w-full py-2 text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              >
+                Add Line
+              </button>
+              <button
+                onClick={addPolygon}
+                className="w-full py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              >
+                Add Polygon
+              </button>
+              <div>
+                <label
+                  htmlFor="imageUpload"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Upload Image:
+                </label>
+                <input
+                  id="imageUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => uploadImage(e)}
+                  className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Text Settings Section */}
-        <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Text Settings</h3>
-          <div className="flex items-center space-x-2">
-            <label>Font Size:</label>
-            <input
-              type="number"
-              value={fontSize}
-              onChange={(e) => updateFontSize(Number(e.target.value))}
-              className="w-16 px-2 py-1 border rounded"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <label>Font:</label>
-            <select
-              value={fontFamily}
-              onChange={(e) => updateFontFamily(e.target.value)}
-              className="px-2 py-1 border rounded"
-            >
-              <option value="Arial">Arial</option>
-              <option value="Courier New">Courier New</option>
-              <option value="Georgia">Georgia</option>
-              <option value="Times New Roman">Times New Roman</option>
-              <option value="Verdana">Verdana</option>
-            </select>
-          </div>
-          <div className="flex items-center space-x-2">
-            <label>Font Color:</label>
-            <input
-              type="color"
-              value={fontColor}
-              onChange={(e) => updateFontColor(e.target.value)}
-              className="px-2 py-1 border rounded"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleBold}
-              className={`px-3 py-1 rounded ${
-                isBold ? "bg-gray-700 text-white" : "bg-gray-200"
-              }`}
-            >
-              B
-            </button>
-            <button
-              onClick={toggleItalic}
-              className={`px-3 py-1 rounded ${
-                isItalic ? "bg-gray-700 text-white" : "bg-gray-200"
-              }`}
-            >
-              I
-            </button>
-            <button
-              onClick={toggleUnderline}
-              className={`px-3 py-1 rounded ${
-                isUnderline ? "bg-gray-700 text-white" : "bg-gray-200"
-              }`}
-            >
-              U
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <label>Alignment:</label>
-            <select
-              value={alignment}
-              onChange={(e) => updateAlignment(e.target.value)}
-              className="px-2 py-1 border rounded"
-            >
-              <option value="left">Left</option>
-              <option value="center">Center</option>
-              <option value="right">Right</option>
-            </select>
-          </div>
+        <div>
+          <button
+            onClick={() => setTextSettingsOpen(!isTextSettingsOpen)}
+            className="w-full py-2 text-left text-lg font-semibold bg-gray-200 hover:bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            Text Settings
+          </button>
+          {isTextSettingsOpen && (
+            <div className="space-y-4 mt-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Font Size:</label>
+                <input
+                  type="number"
+                  value={fontSize}
+                  onChange={(e) => updateFontSize(Number(e.target.value))}
+                  className="w-16 px-2 py-1 text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Font:</label>
+                <select
+                  value={fontFamily}
+                  onChange={(e) => updateFontFamily(e.target.value)}
+                  className="w-32 px-2 py-1 text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                >
+                  <option value="Arial">Arial</option>
+                  <option value="Courier New">Courier New</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                  <option value="Verdana">Verdana</option>
+                </select>
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Font Color:</label>
+                <input
+                  type="color"
+                  value={fontColor}
+                  onChange={(e) => updateFontColor(e.target.value)}
+                  className="w-10 h-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+              <div className="flex items-center justify-between space-x-2">
+                <button
+                  onClick={toggleBold}
+                  className={`w-10 py-2 text-lg font-bold rounded-lg ${
+                    isBold
+                      ? "bg-gray-700 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  } hover:bg-gray-300`}
+                >
+                  B
+                </button>
+                <button
+                  onClick={toggleItalic}
+                  className={`w-10 py-2 text-lg font-bold rounded-lg ${
+                    isItalic
+                      ? "bg-gray-700 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  } hover:bg-gray-300`}
+                >
+                  I
+                </button>
+                <button
+                  onClick={toggleUnderline}
+                  className={`w-10 py-2 text-lg font-bold rounded-lg ${
+                    isUnderline
+                      ? "bg-gray-700 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  } hover:bg-gray-300`}
+                >
+                  U
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Alignment:</label>
+                <select
+                  value={alignment}
+                  onChange={(e) => updateAlignment(e.target.value)}
+                  className="w-32 px-2 py-1 text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Shape Settings Section */}
-        <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Shape Settings</h3>
-          <div className="flex items-center space-x-2">
-            <label>Fill Color:</label>
-            <input
-              type="color"
-              value={fillColor}
-              onChange={(e) => updateFillColor(e.target.value)}
-              className="px-2 py-1 border rounded"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <label>Stroke Color:</label>
-            <input
-              type="color"
-              value={strokeColor}
-              onChange={(e) => updateStrokeColor(e.target.value)}
-              className="px-2 py-1 border rounded"
-            />
-          </div>
+        <div>
+          <button
+            onClick={() => setShapeSettingsOpen(!isShapeSettingsOpen)}
+            className="w-full py-2 text-left text-lg font-semibold bg-gray-200 hover:bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            Shape Settings
+          </button>
+          {isShapeSettingsOpen && (
+            <div className="space-y-4 mt-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Fill Color:</label>
+                <input
+                  type="color"
+                  value={fillColor}
+                  onChange={(e) => updateFillColor(e.target.value)}
+                  className="w-10 h-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Stroke Color:</label>
+                <input
+                  type="color"
+                  value={strokeColor}
+                  onChange={(e) => updateStrokeColor(e.target.value)}
+                  className="w-10 h-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Object Controls */}
-        <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Actions</h3>
+        {/* Actions Section */}
+        <div>
           <button
-            onClick={deleteObject}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={() => setActionsOpen(!isActionsOpen)}
+            className="w-full py-2 text-left text-lg font-semibold bg-gray-200 hover:bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
-            Delete Selected Object
+            Actions
           </button>
-          <button
-            onClick={exportCanvas}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Export Canvas
-          </button>
+          {isActionsOpen && (
+            <div className="space-y-2 mt-2">
+              <button
+                onClick={deleteObject}
+                className="w-full py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+              >
+                Delete Selected Object
+              </button>
+              <button
+                onClick={exportCanvas}
+                className="w-full py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                Export Canvas
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Canvas */}
-      <canvas ref={canvasRef} className="border border-gray-300 shadow-lg" />
+      <div className="flex-1 bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden">
+        <canvas ref={canvasRef} className="w-full h-full" />
+      </div>
     </div>
   );
 };
