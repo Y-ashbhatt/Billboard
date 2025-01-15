@@ -43,7 +43,10 @@ const FabricCanvas = () => {
         setAlignment(activeObject.textAlign || "left");
       } else if (
         activeObject.type === "rect" ||
-        activeObject.type === "circle"
+        activeObject.type === "circle" ||
+        activeObject.type === "triangle" ||
+        activeObject.type === "line" ||
+        activeObject.type === "polygon"
       ) {
         setFillColor(activeObject.fill || "#00bcd4");
         setStrokeColor(activeObject.stroke || "#000000");
@@ -88,6 +91,45 @@ const FabricCanvas = () => {
       radius: 50,
     });
     canvas.add(circle).setActiveObject(circle);
+  };
+  const addTriangle = () => {
+    const triangle = new fabric.Triangle({
+      left: 150,
+      top: 150,
+      fill: fillColor,
+      stroke: strokeColor,
+      width: 100,
+      height: 100,
+    });
+    canvas.add(triangle).setActiveObject(triangle);
+  };
+
+  const addLine = () => {
+    const line = new fabric.Line([100, 100, 200, 200], {
+      left: 100,
+      top: 100,
+      stroke: strokeColor,
+    });
+    canvas.add(line).setActiveObject(line);
+  };
+
+  const addPolygon = () => {
+    const polygon = new fabric.Polygon(
+      [
+        { x: 200, y: 200 },
+        { x: 300, y: 250 },
+        { x: 250, y: 350 },
+        { x: 150, y: 350 },
+        { x: 100, y: 250 },
+      ],
+      {
+        left: 100,
+        top: 100,
+        fill: fillColor,
+        stroke: strokeColor,
+      }
+    );
+    canvas.add(polygon).setActiveObject(polygon);
   };
 
   const updateFontSize = (size) => {
@@ -184,19 +226,42 @@ const FabricCanvas = () => {
     link.download = "canvas.png";
     link.click();
   };
+
   const uploadImage = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        fabric.Image.fromURL(event.target.result, (img) => {
-          img.scaleToWidth(200); // Scale image to a reasonable size
-          canvas.add(img).setActiveObject(img);
-        });
-      };
-      reader.readAsDataURL(file);
+    if (!file) {
+      console.error("No file selected");
+      return;
     }
+
+    console.log("File selected:", file.name);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const imageDataUrl = event.target.result;
+      setTimeout(() => {
+        fabric.FabricImageImage.fromURL(imageDataUrl, (img) => {
+          if (canvas) {
+            img.set({
+              left: 100,
+              top: 100,
+              scaleX: 0.5,
+              scaleY: 0.5,
+            });
+            canvas.add(img);
+            canvas.renderAll();
+          }
+        });
+      }, 0);
+    };
+
+    reader.onerror = (error) => {
+      console.error("FileReader error:", error);
+    };
+
+    reader.readAsDataURL(file);
   };
+
   const deleteObject = () => {
     const activeObject = canvas.getActiveObject();
     if (activeObject) {
@@ -228,6 +293,24 @@ const FabricCanvas = () => {
             className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
           >
             Add Circle
+          </button>
+          <button
+            onClick={addTriangle}
+            className="px-2 py-1 bg-purple-500 text-white rounded hover:bg-purple-600"
+          >
+            Add Triangle
+          </button>
+          <button
+            onClick={addLine}
+            className="px-2 py-1 bg-orange-500 text-white rounded hover:bg-orange-600"
+          >
+            Add Line
+          </button>
+          <button
+            onClick={addPolygon}
+            className="px-2 py-1 bg-teal-500 text-white rounded hover:bg-teal-600"
+          >
+            Add Polygon
           </button>
           <div>
             <label
