@@ -16,8 +16,8 @@ const FabricCanvas = () => {
 
   useEffect(() => {
     const newCanvas = new fabric.Canvas(canvasRef.current, {
-      width: 800,
-      height: 600,
+      width: 1200,
+      height: 700,
       backgroundColor: "#f3f3f3",
     });
     setCanvas(newCanvas);
@@ -492,8 +492,8 @@ const FabricCanvas = () => {
       </div>
 
       {/* Canvas */}
-      <div className="flex-1 bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden">
-        <canvas ref={canvasRef} className="w-full h-full" />
+      <div className=" bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden">
+        <canvas ref={canvasRef} />
       </div>
     </div>
   );
