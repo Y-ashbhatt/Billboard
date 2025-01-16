@@ -12,6 +12,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import Error from "./components/Error";
 import FabricCanvas from "./components/CanvasArea";
 
+
 const App = () => {
   return (
     <>

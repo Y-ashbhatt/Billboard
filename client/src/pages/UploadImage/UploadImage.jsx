@@ -16,36 +16,32 @@ const UploadImage = () => {
   const { showNotification } = useNotification();
   const navigate = useNavigate();
   const baseURL = "http://127.0.0.1:5000/api";
-  let billboardImagePath = "C:\\Users\\lenovo\\Desktop\\pythonBackend\\uploads\\";
+  // const [finalImage, setfinalImage] = useState('/')
+  // let billboardImagePath = "C:\\Users\\lenovo\\Desktop\\pythonBackend\\uploads\\";
 
 
-  // Function to fetch data
-  const fetchData = useCallback(async () => {
+  const handleStepOne = async () => {
+    if (!billboard) {
+      showNotification("Please upload a billboard image before proceeding.");
+      return;
+    }
+
     try {
       setLoading(true);
-
       const formData = new FormData();
       if (billboard) formData.append("billboard", billboard);
-      console.log(formData)
-      // if (banner) formData.append("banner", banner);
+      console.log(formData);
 
       // Make the API request
       const response = await axios.post(
         `${baseURL}/generate-billboard`,
         formData
       );
-
+      console.log(response);
       if (response.status === 200) {
         setError(false);
-        // Store the image in sessionStorage
-        // if (response.data.image) {
-        //   sessionStorage.setItem("generatedImage", response.data.image);
-        // }10
-        billboardImagePath+=response.data.uploaded_files.billboard.replace(/^.*[\\/]/, '');
         setCurrentStep(2);
         setLoading(false);
-
-        // navigate("/");
       }
     } catch (err) {
       console.error("API Error:", err);
@@ -53,53 +49,55 @@ const UploadImage = () => {
     } finally {
       setLoading(false);
     }
-  }, [billboard, banner]);
-
-
-  const handleStepOne = () => {
-    if (!billboard) {
-      showNotification("Please upload a billboard image before proceeding.");
-    } else {
-      // fetchData();
-      setLoading(true)
-      setTimeout(() => {
-        setCurrentStep(2);
-        setLoading(false)
-      }, 6500);
-    }
   };
 
 
   const handleStepTwo = () => {
     if (!billboard) {
-      setCurrentStep(1)
+      setCurrentStep(1);
     } else {
-      setCurrentStep(3)
-    }
-  }
-
-
-  const handleStepThree = () => {
-    if (!banner) {
-      showNotification("Please upload a banner image to proceed.");
-      // return;
-    } else {
-      // fetchData();
-      setLoading(true)
-      setTimeout(() => {
-        setCurrentStep(2);
-        setLoading(false)
-        navigate('/success')
-      }, 6500);
+      setCurrentStep(3);
     }
   };
+
+
+  const handleStepThree = async () => {
+    if (!banner) {
+      showNotification("Please upload a banner image to proceed.");
+      return;
+    }
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      if (banner) formData.append("banner", banner);
+      console.log(formData);
+
+      // Make the API request
+      const response = await axios.post(
+        `${baseURL}/generate-banner`,
+        formData
+      );
+      console.log(response);
+
+      if (response.status === 200) {
+        setError(false);
+        navigate('/success');
+      }
+    } catch (err) {
+      console.error("API Error:", err);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
 
   return (
     <>
       <div className="bg-gray-100 min-h-screen flex ">
         {/* Sidebar */}
-       <Sidebar/>
+        <Sidebar />
 
         {/* Main Content */}
         <main className="flex-1 py-3 px-6">
@@ -107,7 +105,7 @@ const UploadImage = () => {
           <header className="flex justify-end items-center mb-6 w-full">
 
             {/* Create Task Button */}
-            
+
           </header>
 
           {/* <div className="flex mt-2 mb-6">
@@ -126,7 +124,7 @@ const UploadImage = () => {
                   <p className="text-lg text-gray-600 mb-6">
                     Upload the image that you want to use for the billboard.Once uploaded, proceed to the next step to upload yourbanner.
                   </p>
-                  <FileUploader label="Choose Billboard Image" onFileChange={(file) => {setBillboard(file)}} />
+                  <FileUploader label="Choose Billboard Image" onFileChange={(file) => { setBillboard(file) }} />
                   <Button label={loading ? "Processing..." : "Process with AI"} onClick={handleStepOne}
                     className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
                       ? "opacity-50 cursor-not-allowed"
@@ -190,6 +188,7 @@ const UploadImage = () => {
             </div>
           )}
         </main>
+        {/* <img src={finalImage} alt="" /> */}
       </div>
     </>
   );
