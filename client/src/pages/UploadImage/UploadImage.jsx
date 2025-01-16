@@ -16,90 +16,122 @@ const UploadImage = () => {
   const { showNotification } = useNotification();
   const navigate = useNavigate();
   const baseURL = "http://127.0.0.1:5000/api";
-  let billboardImagePath = "C:\\Users\\lenovo\\Desktop\\pythonBackend\\uploads\\";
+  const [step2Billboard, setStep2Billboard] = useState(null);
+  const [step2SegmentedBillboard, setStep2SegmentedBillboard] = useState(null);
+  const [finalBillboard, setFinalBillboard] = useState(null);
+  const [finalImage, setfinalImage] = useState('/')
+  
 
 
-  // Function to fetch data
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
+    if (!billboard) {
+      showNotification("Please upload a billboard image before proceeding.");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      const formData = new FormData();
-      if (billboard) formData.append("billboard", billboard);
-      console.log(formData)
-      // if (banner) formData.append("banner", banner);
+      if (currentStep === 1) {
 
-      // Make the API request
-      const response = await axios.post(
-        `${baseURL}/generate-billboard`,
-        formData
-      );
+        const formData = new FormData();
+        if (billboard) formData.append("billboard", billboard);
+        // if (banner) formData.append("banner", banner);
 
-      if (response.status === 200) {
-        setError(false);
-        // Store the image in sessionStorage
-        // if (response.data.image) {
-        //   sessionStorage.setItem("generatedImage", response.data.image);
-        // }10
-        billboardImagePath+=response.data.uploaded_files.billboard.replace(/^.*[\\/]/, '');
-        setCurrentStep(2);
-        setLoading(false);
+        // Make the API request
+        const response = await axios.post(
+          `${baseURL}/generate-billboard`,
+          formData
+        );
 
-        // navigate("/");
+        if (response.status === 200) {
+          setError(false);
+          // Store the image in sessionStorage
+          if (response.data.billboard && response.data.segmentedBillboard) {
+            setStep2Billboard(response.data.billboard);
+            setStep2SegmentedBillboard(response.data.segmentedBillboard);
+          }
+          setCurrentStep(2);
+          setLoading(false);
+        }
+
       }
-    } catch (err) {
+      else if (currentStep === 3) {
+
+        const formData = new FormData();
+        if (banner) formData.append("banner", banner);
+
+        // Make the API request
+        const response = await axios.post(
+          `${baseURL}/generate-banner`,
+          formData
+        );
+
+        if (response.status === 200) {
+          setError(false);
+          // Store the image in sessionStorage
+          if (response.data.finalBillboard) {
+            setFinalBillboard(response.data.finalBillboard);
+          }
+          navigate('/preview');
+        }
+      }
+
+    }
+    catch (err) {
       console.error("API Error:", err);
       setError(true);
     } finally {
       setLoading(false);
     }
-  }, [billboard, banner]);
+  };
 
 
   const handleStepOne = () => {
     if (!billboard) {
       showNotification("Please upload a billboard image before proceeding.");
     } else {
-      // fetchData();
-      setLoading(true)
-      setTimeout(() => {
-        setCurrentStep(2);
-        setLoading(false)
-      }, 6500);
+      fetchData();
+      // setLoading(true)
+      // setTimeout(() => {
+      //   setCurrentStep(2);
+      //   setLoading(false)
+      // }, 6500);
     }
   };
 
 
   const handleStepTwo = () => {
-    if (!billboard) {
+    if (!step2Billboard) {
       setCurrentStep(1)
     } else {
-      setCurrentStep(3)
-    }
-  }
-
-
-  const handleStepThree = () => {
-    if (!banner) {
-      showNotification("Please upload a banner image to proceed.");
-      // return;
-    } else {
-      // fetchData();
-      setLoading(true)
-      setTimeout(() => {
-        setCurrentStep(2);
-        setLoading(false)
-        navigate('/success')
-      }, 6500);
+      setCurrentStep(3);
     }
   };
+
+
+  const handleStepThree = async () => {
+    if (!banner) {
+      showNotification("Please upload a banner image to proceed.");
+      return;
+    } else {
+      fetchData();
+      // setLoading(true)
+      // setTimeout(() => {
+      //   setCurrentStep(2);
+      //   setLoading(false)
+      //   navigate('/success')
+      // }, 6500);
+    }
+  };
+
 
 
   return (
     <>
       <div className="bg-gray-100 min-h-screen flex ">
         {/* Sidebar */}
-       <Sidebar/>
+        <Sidebar />
 
         {/* Main Content */}
         <main className="flex-1 py-3 px-6">
@@ -107,7 +139,7 @@ const UploadImage = () => {
           <header className="flex justify-end items-center mb-6 w-full">
 
             {/* Create Task Button */}
-            
+
           </header>
 
           {/* <div className="flex mt-2 mb-6">
@@ -126,7 +158,7 @@ const UploadImage = () => {
                   <p className="text-lg text-gray-600 mb-6">
                     Upload the image that you want to use for the billboard.Once uploaded, proceed to the next step to upload yourbanner.
                   </p>
-                  <FileUploader label="Choose Billboard Image" onFileChange={(file) => {setBillboard(file)}} />
+                  <FileUploader label="Choose Billboard Image" onFileChange={(file) => { setBillboard(file) }} />
                   <Button label={loading ? "Processing..." : "Process with AI"} onClick={handleStepOne}
                     className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
                       ? "opacity-50 cursor-not-allowed"
@@ -141,11 +173,11 @@ const UploadImage = () => {
                 <div className="max-w-[1450px] flex flex-col items-center gap-9">
                   <figure className="w-full flex justify-between gap-16">
                     <div className="text-center">
-                      <img src="/billboardimg.jpeg" alt="Source Image" className="h-[300px] rounded-lg" />
+                      <img src={step2Billboard} alt="Source Image" className="h-[300px] rounded-lg" />
                       <figcaption className="mt-2 text-lg font-medium">Source Image</figcaption>
                     </div>
                     <div className="text-center">
-                      <img src="/billboardsegment.jpeg" alt="Segmented Image" className="h-[300px] rounded-lg" />
+                      <img src={step2SegmentedBillboard} alt="Segmented Image" className="h-[300px] rounded-lg" />
                       <figcaption className="mt-2 text-lg font-medium">Segemented Image</figcaption>
                     </div>
                   </figure>
@@ -190,6 +222,7 @@ const UploadImage = () => {
             </div>
           )}
         </main>
+        {/* <img src={finalImage} alt="" /> */}
       </div>
     </>
   );

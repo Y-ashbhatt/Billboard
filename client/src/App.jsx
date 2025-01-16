@@ -13,6 +13,7 @@ import Error from "./components/Error";
 import FabricCanvas from "./components/CanvasArea";
 import DrawingBoard from "./pages/Draw/DrawingBoard";
 
+
 const App = () => {
   return (
     <>
