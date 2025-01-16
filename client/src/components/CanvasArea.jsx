@@ -13,61 +13,22 @@ const FabricCanvas = () => {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [alignment, setAlignment] = useState("left");
-  const [history, setHistory] = useState([]);
-  const [redoStack, setRedoStack] = useState([]);
 
   useEffect(() => {
     const newCanvas = new fabric.Canvas(canvasRef.current, {
-      width: 800,
-      height: 600,
+      width: 1200,
+      height: 700,
       backgroundColor: "#f3f3f3",
     });
     setCanvas(newCanvas);
 
-    newCanvas.on("object:modified", saveHistory);
-    newCanvas.on("object:added", saveHistory);
     newCanvas.on("object:selected", updateActiveObjectProperties);
     newCanvas.on("selection:updated", updateActiveObjectProperties);
 
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.key === "z") {
-        e.preventDefault();
-        undo();
-      } else if (e.ctrlKey && e.key === "y") {
-        e.preventDefault();
-        redo();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       newCanvas.dispose();
-      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  const saveHistory = () => {
-    setRedoStack([]);
-    setHistory((prev) => [...prev, JSON.stringify(canvas)]);
-  };
-
-  const undo = () => {
-    if (history.length > 0) {
-      const lastState = history.pop();
-      setRedoStack((prev) => [...prev, JSON.stringify(canvas)]);
-      setHistory([...history]);
-      canvas.loadFromJSON(lastState, () => canvas.renderAll());
-    }
-  };
-
-  const redo = () => {
-    if (redoStack.length > 0) {
-      const nextState = redoStack.pop();
-      setHistory((prev) => [...prev, JSON.stringify(canvas)]);
-      canvas.loadFromJSON(nextState, () => canvas.renderAll());
-    }
-  };
 
   const updateActiveObjectProperties = () => {
     const activeObject = canvas.getActiveObject();
@@ -82,9 +43,13 @@ const FabricCanvas = () => {
         setAlignment(activeObject.textAlign || "left");
       } else if (
         activeObject.type === "rect" ||
-        activeObject.type === "circle"
+        activeObject.type === "circle" ||
+        activeObject.type === "triangle" ||
+        activeObject.type === "line" ||
+        activeObject.type === "polygon"
       ) {
         setFillColor(activeObject.fill || "#00bcd4");
+        setStrokeColor(activeObject.stroke || "#000000");
       }
     }
   };
@@ -110,6 +75,7 @@ const FabricCanvas = () => {
       left: 100,
       top: 100,
       fill: fillColor,
+      stroke: strokeColor,
       width: 100,
       height: 100,
     });
@@ -121,9 +87,49 @@ const FabricCanvas = () => {
       left: 150,
       top: 150,
       fill: fillColor,
+      stroke: strokeColor,
       radius: 50,
     });
     canvas.add(circle).setActiveObject(circle);
+  };
+  const addTriangle = () => {
+    const triangle = new fabric.Triangle({
+      left: 150,
+      top: 150,
+      fill: fillColor,
+      stroke: strokeColor,
+      width: 100,
+      height: 100,
+    });
+    canvas.add(triangle).setActiveObject(triangle);
+  };
+
+  const addLine = () => {
+    const line = new fabric.Line([100, 100, 200, 200], {
+      left: 100,
+      top: 100,
+      stroke: strokeColor,
+    });
+    canvas.add(line).setActiveObject(line);
+  };
+
+  const addPolygon = () => {
+    const polygon = new fabric.Polygon(
+      [
+        { x: 200, y: 200 },
+        { x: 300, y: 250 },
+        { x: 250, y: 350 },
+        { x: 150, y: 350 },
+        { x: 100, y: 250 },
+      ],
+      {
+        left: 100,
+        top: 100,
+        fill: fillColor,
+        stroke: strokeColor,
+      }
+    );
+    canvas.add(polygon).setActiveObject(polygon);
   };
 
   const updateFontSize = (size) => {
@@ -140,6 +146,39 @@ const FabricCanvas = () => {
     const activeObject = canvas.getActiveObject();
     if (activeObject && activeObject.type === "textbox") {
       activeObject.set("fontFamily", family);
+      canvas.renderAll();
+    }
+  };
+
+  const updateFontColor = (color) => {
+    setFontColor(color);
+    const activeObject = canvas.getActiveObject();
+    if (activeObject && activeObject.type === "textbox") {
+      activeObject.set("fill", color);
+      canvas.renderAll();
+    }
+  };
+
+  const updateFillColor = (color) => {
+    setFillColor(color);
+    const activeObject = canvas.getActiveObject();
+    if (
+      activeObject &&
+      (activeObject.type === "rect" || activeObject.type === "circle")
+    ) {
+      activeObject.set("fill", color);
+      canvas.renderAll();
+    }
+  };
+
+  const updateStrokeColor = (color) => {
+    setStrokeColor(color);
+    const activeObject = canvas.getActiveObject();
+    if (
+      activeObject &&
+      (activeObject.type === "rect" || activeObject.type === "circle")
+    ) {
+      activeObject.set("stroke", color);
       canvas.renderAll();
     }
   };
@@ -188,118 +227,274 @@ const FabricCanvas = () => {
     link.click();
   };
 
+  const uploadImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      console.error("No file selected");
+      return;
+    }
+
+    console.log("File selected:", file.name);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const imageDataUrl = event.target.result;
+      setTimeout(() => {
+        fabric.FabricImageImage.fromURL(imageDataUrl, (img) => {
+          if (canvas) {
+            img.set({
+              left: 100,
+              top: 100,
+              scaleX: 0.5,
+              scaleY: 0.5,
+            });
+            canvas.add(img);
+            canvas.renderAll();
+          }
+        });
+      }, 0);
+    };
+
+    reader.onerror = (error) => {
+      console.error("FileReader error:", error);
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const deleteObject = () => {
+    const activeObject = canvas.getActiveObject();
+    if (activeObject) {
+      canvas.remove(activeObject);
+    }
+  };
+  const [isTextSettingsOpen, setTextSettingsOpen] = useState(false);
+  const [isShapeSettingsOpen, setShapeSettingsOpen] = useState(false);
+  const [isActionsOpen, setActionsOpen] = useState(true);
+  const [isElementsOpen, setElementsOpen] = useState(true); // Set Elements to be open by default
+
   return (
-    <div className="flex flex-col items-center p-4">
+    <div className="flex p-6 space-x-6">
       {/* Toolbar */}
-      <div className="mb-4 flex flex-wrap items-center gap-4 bg-gray-100 p-3 rounded shadow">
-        {/* Add Elements */}
-        <button
-          onClick={addText}
-          className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Add Text
-        </button>
-        <button
-          onClick={addRectangle}
-          className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Add Rectangle
-        </button>
-        <button
-          onClick={addCircle}
-          className="px-3 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-        >
-          Add Circle
-        </button>
-
-        {/* Font Controls */}
-        <div className="flex items-center space-x-2">
-          <label>Font Size:</label>
-          <input
-            type="number"
-            value={fontSize}
-            onChange={(e) => updateFontSize(Number(e.target.value))}
-            className="w-16 px-2 py-1 border rounded"
-          />
-        </div>
-        <div className="flex items-center space-x-2">
-          <label>Font:</label>
-          <select
-            value={fontFamily}
-            onChange={(e) => updateFontFamily(e.target.value)}
-            className="px-2 py-1 border rounded"
+      <div className="w-72 bg-gray-100 p-4 rounded-lg shadow-md space-y-4">
+        {/* Elements Section */}
+        <div>
+          <button
+            onClick={() => setElementsOpen(!isElementsOpen)}
+            className="w-full py-2 text-left text-lg font-semibold bg-gray-200 hover:bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
-            <option value="Arial">Arial</option>
-            <option value="Courier New">Courier New</option>
-            <option value="Georgia">Georgia</option>
-            <option value="Times New Roman">Times New Roman</option>
-            <option value="Verdana">Verdana</option>
-          </select>
+            Elements
+          </button>
+          {isElementsOpen && (
+            <div className="space-y-2 mt-2">
+              <button
+                onClick={addText}
+                className="w-full py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                Add Text
+              </button>
+              <button
+                onClick={addRectangle}
+                className="w-full py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                Add Rectangle
+              </button>
+              <button
+                onClick={addCircle}
+                className="w-full py-2 text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              >
+                Add Circle
+              </button>
+              <button
+                onClick={addTriangle}
+                className="w-full py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              >
+                Add Triangle
+              </button>
+              <button
+                onClick={addLine}
+                className="w-full py-2 text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              >
+                Add Line
+              </button>
+              <button
+                onClick={addPolygon}
+                className="w-full py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              >
+                Add Polygon
+              </button>
+              <div>
+                <label
+                  htmlFor="imageUpload"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Upload Image:
+                </label>
+                <input
+                  id="imageUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => uploadImage(e)}
+                  className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Style Controls */}
-        <button
-          onClick={toggleBold}
-          className={`px-3 py-2 rounded ${
-            isBold ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          Bold
-        </button>
-        <button
-          onClick={toggleItalic}
-          className={`px-3 py-2 rounded ${
-            isItalic ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          Italic
-        </button>
-        <button
-          onClick={toggleUnderline}
-          className={`px-3 py-2 rounded ${
-            isUnderline ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          Underline
-        </button>
+        {/* Text Settings Section */}
+        <div>
+          <button
+            onClick={() => setTextSettingsOpen(!isTextSettingsOpen)}
+            className="w-full py-2 text-left text-lg font-semibold bg-gray-200 hover:bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            Text Settings
+          </button>
+          {isTextSettingsOpen && (
+            <div className="space-y-4 mt-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Font Size:</label>
+                <input
+                  type="number"
+                  value={fontSize}
+                  onChange={(e) => updateFontSize(Number(e.target.value))}
+                  className="w-16 px-2 py-1 text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Font:</label>
+                <select
+                  value={fontFamily}
+                  onChange={(e) => updateFontFamily(e.target.value)}
+                  className="w-32 px-2 py-1 text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                >
+                  <option value="Arial">Arial</option>
+                  <option value="Courier New">Courier New</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                  <option value="Verdana">Verdana</option>
+                </select>
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Font Color:</label>
+                <input
+                  type="color"
+                  value={fontColor}
+                  onChange={(e) => updateFontColor(e.target.value)}
+                  className="w-10 h-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+              <div className="flex items-center justify-between space-x-2">
+                <button
+                  onClick={toggleBold}
+                  className={`w-10 py-2 text-lg font-bold rounded-lg ${
+                    isBold
+                      ? "bg-gray-700 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  } hover:bg-gray-300`}
+                >
+                  B
+                </button>
+                <button
+                  onClick={toggleItalic}
+                  className={`w-10 py-2 text-lg font-bold rounded-lg ${
+                    isItalic
+                      ? "bg-gray-700 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  } hover:bg-gray-300`}
+                >
+                  I
+                </button>
+                <button
+                  onClick={toggleUnderline}
+                  className={`w-10 py-2 text-lg font-bold rounded-lg ${
+                    isUnderline
+                      ? "bg-gray-700 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  } hover:bg-gray-300`}
+                >
+                  U
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Alignment:</label>
+                <select
+                  value={alignment}
+                  onChange={(e) => updateAlignment(e.target.value)}
+                  className="w-32 px-2 py-1 text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
+            </div>
+          )}
+        </div>
 
-        {/* Alignment */}
-        <button
-          onClick={() => updateAlignment("left")}
-          className={`px-3 py-2 rounded ${
-            alignment === "left" ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          Left
-        </button>
-        <button
-          onClick={() => updateAlignment("center")}
-          className={`px-3 py-2 rounded ${
-            alignment === "center" ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          Center
-        </button>
-        <button
-          onClick={() => updateAlignment("right")}
-          className={`px-3 py-2 rounded ${
-            alignment === "right" ? "bg-gray-700 text-white" : "bg-gray-200"
-          }`}
-        >
-          Right
-        </button>
+        {/* Shape Settings Section */}
+        <div>
+          <button
+            onClick={() => setShapeSettingsOpen(!isShapeSettingsOpen)}
+            className="w-full py-2 text-left text-lg font-semibold bg-gray-200 hover:bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            Shape Settings
+          </button>
+          {isShapeSettingsOpen && (
+            <div className="space-y-4 mt-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Fill Color:</label>
+                <input
+                  type="color"
+                  value={fillColor}
+                  onChange={(e) => updateFillColor(e.target.value)}
+                  className="w-10 h-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">Stroke Color:</label>
+                <input
+                  type="color"
+                  value={strokeColor}
+                  onChange={(e) => updateStrokeColor(e.target.value)}
+                  className="w-10 h-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+            </div>
+          )}
+        </div>
 
-        {/* Export */}
-        <button
-          onClick={exportCanvas}
-          className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        >
-          Export
-        </button>
+        {/* Actions Section */}
+        <div>
+          <button
+            onClick={() => setActionsOpen(!isActionsOpen)}
+            className="w-full py-2 text-left text-lg font-semibold bg-gray-200 hover:bg-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            Actions
+          </button>
+          {isActionsOpen && (
+            <div className="space-y-2 mt-2">
+              <button
+                onClick={deleteObject}
+                className="w-full py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+              >
+                Delete Selected Object
+              </button>
+              <button
+                onClick={exportCanvas}
+                className="w-full py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                Export Canvas
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Canvas */}
-      <canvas ref={canvasRef} className="border border-gray-300 shadow-lg" />
+      <div className=" bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden">
+        <canvas ref={canvasRef} />
+      </div>
     </div>
   );
 };
