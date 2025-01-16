@@ -19,11 +19,11 @@ const UploadImage = () => {
   const [step2Billboard, setStep2Billboard] = useState(null);
   const [step2SegmentedBillboard, setStep2SegmentedBillboard] = useState(null);
   const [finalBillboard, setFinalBillboard] = useState(null);
-  // const [finalImage, setfinalImage] = useState('/')
+  const [finalImage, setfinalImage] = useState('/')
   
 
 
-  const handleStepOne = async () => {
+  const fetchData = async () => {
     if (!billboard) {
       showNotification("Please upload a billboard image before proceeding.");
       return;
@@ -84,7 +84,7 @@ const UploadImage = () => {
     } finally {
       setLoading(false);
     }
-  }, [billboard, banner]);
+  };
 
 
   const handleStepOne = () => {
