@@ -6,7 +6,7 @@ const DrawingBoard = () => {
   return (
     <div className="bg-gray-100 min-h-screen flex">
       {/* Sidebar */}
-      <div className="w-64">
+      <div className="w-28">
         <Sidebar />
       </div>
 
