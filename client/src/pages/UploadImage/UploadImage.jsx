@@ -19,10 +19,16 @@ const UploadImage = () => {
   const [step2Billboard, setStep2Billboard] = useState(null);
   const [step2SegmentedBillboard, setStep2SegmentedBillboard] = useState(null);
   const [finalBillboard, setFinalBillboard] = useState(null);
+  // const [finalImage, setfinalImage] = useState('/')
+  
 
 
-  // Function to fetch data
-  const fetchData = useCallback(async () => {
+  const handleStepOne = async () => {
+    if (!billboard) {
+      showNotification("Please upload a billboard image before proceeding.");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -78,7 +84,6 @@ const UploadImage = () => {
     } finally {
       setLoading(false);
     }
-
   }, [billboard, banner]);
 
 
@@ -100,15 +105,15 @@ const UploadImage = () => {
     if (!step2Billboard) {
       setCurrentStep(1)
     } else {
-      setCurrentStep(3)
+      setCurrentStep(3);
     }
-  }
+  };
 
 
-  const handleStepThree = () => {
+  const handleStepThree = async () => {
     if (!banner) {
       showNotification("Please upload a banner image to proceed.");
-      // return;
+      return;
     } else {
       fetchData();
       // setLoading(true)
@@ -119,6 +124,7 @@ const UploadImage = () => {
       // }, 6500);
     }
   };
+
 
 
   return (
@@ -216,6 +222,7 @@ const UploadImage = () => {
             </div>
           )}
         </main>
+        {/* <img src={finalImage} alt="" /> */}
       </div>
     </>
   );
