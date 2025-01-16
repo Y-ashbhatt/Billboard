@@ -1,6 +1,6 @@
 import React from "react";
 import Sidebar from "../../components/Sidebar";
-import { Excalidraw } from "@excalidraw/excalidraw";
+import { Excalidraw, MainMenu } from "@excalidraw/excalidraw";
 
 const DrawingBoard = () => {
   return (
@@ -19,7 +19,19 @@ const DrawingBoard = () => {
         </header>
 
         <div className="flex-1">
-          <Excalidraw style={{ width: "100%", height: "100%" }} />
+          <Excalidraw style={{ width: "100%", height: "100%" }}>
+            <MainMenu>
+              <MainMenu.DefaultItems.LoadScene />
+              <MainMenu.DefaultItems.SaveToActiveFile />
+              <MainMenu.DefaultItems.Export />
+              <MainMenu.DefaultItems.SaveAsImage />
+              <MainMenu.DefaultItems.ClearCanvas />
+              <MainMenu.DefaultItems.Help />
+              <MainMenu.DefaultItems.ToggleTheme />
+              <div className="mt-2 border-b"></div>
+              <MainMenu.DefaultItems.ChangeCanvasBackground />
+            </MainMenu>
+          </Excalidraw>
         </div>
       </main>
     </div>
