@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as fabric from "fabric";
 
+
+
 const FabricCanvas = () => {
   const canvasRef = useRef(null);
   const [canvas, setCanvas] = useState(null);
@@ -113,15 +115,41 @@ const FabricCanvas = () => {
     canvas.add(line).setActiveObject(line);
   };
 
-  const addpencilbrush = () => {
+  const drawPencilStrock = () => {
     if (canvas) {
       canvas.isDrawingMode = true;
-      const pencilBrush = new fabric.PencilBrush(canvas);
-      pencilBrush.color = strokeColor; 
-      pencilBrush.width = 2; 
-      canvas.freeDrawingBrush = pencilBrush;
+      const pencil = new fabric.PencilBrush(canvas);
+      pencil.color = strokeColor; 
+      pencil.width = 2; 
+      canvas.freeDrawingBrush = pencil;
     }
   };
+
+  const drawSprayBrushStrock = () => {
+    if(canvas) {
+      canvas.isDrawingMode = true;
+      const brush = new fabric.SprayBrush(canvas);
+      brush.width = 20; 
+      brush.dotWidth = 1; 
+      brush.dotWidthVariance = 5;
+      brush.sprayDensity = 100; 
+      brush.sprayRadius = 20;
+      canvas.freeDrawingBrush = brush
+    }
+  }
+
+  const drawCircleBrushStrock = () => {
+    if(canvas) {
+      canvas.isDrawingMode = true;
+      const brush = new fabric.CircleBrush(canvas);
+      brush.width = 20; 
+      brush.dotWidth = 1; 
+      brush.dotWidthVariance = 5;
+      brush.sprayDensity = 100; 
+      brush.sprayRadius = 20;
+      canvas.freeDrawingBrush = brush
+    }
+  }
 
   const addPolygon = () => {
     const polygon = new fabric.Polygon(
@@ -332,6 +360,24 @@ const FabricCanvas = () => {
                 className="w-full py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
               >
                 Add Polygon
+              </button>
+              <button
+                onClick={drawPencilStrock}
+                className="w-full py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              >
+                Brush
+              </button>
+              <button
+                onClick={drawSprayBrushStrock}
+                className="w-full py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              >
+                Spray Brush
+              </button>
+              <button
+                onClick={drawCircleBrushStrock}
+                className="w-full py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              >
+               Circle Bursh
               </button>
               <div>
                 <label

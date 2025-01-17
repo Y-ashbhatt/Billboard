@@ -45,7 +45,7 @@ const Dashboard = () => {
                   Design and personalize your banners from scratch with an intuitive editor. Add text, images, and colors to make your banner truly unique.
                 </p>
                 <button
-                  onClick={() => navigate("/create-banner")}
+                  onClick={() => navigate("/draw")}
                   className="bg-purple-600 text-white px-6 py-2 rounded-full font-medium shadow-md hover:bg-purple-700"
                 >
                   Start Designing
