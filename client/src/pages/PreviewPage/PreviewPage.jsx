@@ -1,28 +1,22 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 
 const PreviewPage = () => {
-  const finalImage = "./processedimg.jpeg";
 
-  const pictureSVG = "./picture.svg";
-  const HTMLmockups = "./HTMLmockups.svg";
-  const ChatGptCredits = "./ChatGptCredits.svg";
-  const tasksSVG = "./tasks.svg";
-  const settingsSVG = "./settings.svg";
-  const creditsSVG = "./credits.svg";
-
+  const location = useLocation();
+  const finalBillboardImage = location.state?.finalBillboard;
   const navigate = useNavigate('/upload')
 
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = finalImage;
+    link.href = finalBillboardImage;
     link.download = "updated-billboard.png";
     link.click();
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen flex">
+    <div className="bg-white min-h-screen flex">
       {/* Sidebar */}
       <Sidebar />
 
@@ -39,17 +33,18 @@ const PreviewPage = () => {
           <h1 className="text-3xl text-center w-full font-bold">Download Billboard</h1>
         </div>
         {/* Image Preview */}
-        {finalImage ? (
+        {finalBillboardImage ? (
           <img
-            src={finalImage}
+            src={finalBillboardImage}
             alt="Processed Image"
-            className="w-full max-w-lg rounded-lg shadow-lg mb-6"
+            className="h-[300px] max-w-lg rounded-lg shadow-lg mb-6"
           />
         ) : (
           <p className="text-lg text-gray-700 mb-6">
             No image available for preview.
           </p>
         )}
+        
         {/* Download Button */}
         <button
           onClick={handleDownload}

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import FileUploader from "../../components/FileUploader";
 import Button from "../../components/Button";
 import { useNotification } from "../../context/NotificationContext";
@@ -15,13 +15,9 @@ const UploadImage = () => {
   const [currentStep, setCurrentStep] = useState(1); // Step 1: Billboard, Step 2: Banner
   const { showNotification } = useNotification();
   const navigate = useNavigate();
-  const baseURL = "http://127.0.0.1:5000/api";
+  const baseURL = "https://b92a-35-203-170-219.ngrok-free.app";
   const [step2Billboard, setStep2Billboard] = useState(null);
   const [step2SegmentedBillboard, setStep2SegmentedBillboard] = useState(null);
-  const [finalBillboard, setFinalBillboard] = useState(null);
-  const [finalImage, setfinalImage] = useState('/')
-  
-
 
   const fetchData = async () => {
     if (!billboard) {
@@ -60,6 +56,7 @@ const UploadImage = () => {
 
         const formData = new FormData();
         if (banner) formData.append("banner", banner);
+        if(billboard) formData.append("billboard",billboard)
 
         // Make the API request
         const response = await axios.post(
@@ -70,10 +67,9 @@ const UploadImage = () => {
         if (response.status === 200) {
           setError(false);
           // Store the image in sessionStorage
-          if (response.data.finalBillboard) {
-            setFinalBillboard(response.data.finalBillboard);
+          if (response.data.finalBillboard) {  
+            navigate('/success', { state: { finalBillboard: response.data.finalBillboard }});
           }
-          navigate('/preview');
         }
       }
 
@@ -129,7 +125,7 @@ const UploadImage = () => {
 
   return (
     <>
-      <div className="bg-gray-100 min-h-screen flex ">
+      <div className="bg-white min-h-screen flex ">
         {/* Sidebar */}
         <Sidebar />
 
