@@ -11,7 +11,7 @@ const Dashboard = () => {
   const settingsSVG = "./settings.svg";
   const creditsSVG = "./credits.svg";
   return (
-    <div className="bg-gray-100 min-h-screen flex">
+    <div className="bg-white min-h-screen flex">
       {/* Sidebar */}
       <Sidebar />
 

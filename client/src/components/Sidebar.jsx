@@ -4,11 +4,11 @@ export class Sidebar extends Component {
   render() {
     return (
       <aside className="w-50 fixed">
-        <div className="p-4 flex items-center justify-center">
-          <div className="w-14 h-14 text-white flex items-center justify-center font-bold">
+        <div className="px-2 flex items-center justify-center">
+          <div className="w-24 h-24 text-white flex items-center justify-center font-bold">
             <img
-              className="w-14 h-14 rounded-full bg-blue-200"
-              src='/logo1.png'
+              className="w-24 h-24"
+              src='/logo2.jpg'
               alt="LOGO"
             />
           </div>
@@ -18,7 +18,7 @@ export class Sidebar extends Component {
             <li className="px-6">
               <a
                 href="#"
-                className="w-fit flex items-center p-2 hover:bg-gray-200 rounded-lg"
+                className="w-fit flex items-center p-2 hover:bg-gray-100 rounded-lg"
                 title="Dashboard"
               >
                 <img className="w-9 h-9" src='/dashboard.svg' alt="Dashboard" />
@@ -28,7 +28,7 @@ export class Sidebar extends Component {
             <li className="px-6">
               <a
                 href="#"
-                className="w-fit flex items-center p-2 hover:bg-gray-200 rounded-lg"
+                className="w-fit flex items-center p-2 hover:bg-gray-100 rounded-lg"
                 title="Settings"
               >
                 <img className="w-9 h-9" src='/settings.svg' alt="Settings" />
@@ -38,7 +38,7 @@ export class Sidebar extends Component {
             <li className="px-6">
               <a
                 href="#"
-                className="w-fit flex items-center p-2 hover:bg-gray-200 rounded-lg"
+                className="w-fit flex items-center p-2 hover:bg-gray-100 rounded-lg"
                 title="Profile"
               >
                 <img className="w-9 h-9" src='/account.svg' alt="Profile" />
@@ -51,7 +51,7 @@ export class Sidebar extends Component {
           <div className="">
             <a
               href="/"
-              className="w-fit flex items-center p-2 hover:bg-gray-200 rounded-lg"
+              className="w-fit flex items-center p-2 hover:bggray-100 rounded-lg"
               title="Logout"
             >
               <img className="w-9 h-9" src='/logout.svg' alt="Logout" />
