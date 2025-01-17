@@ -113,6 +113,16 @@ const FabricCanvas = () => {
     canvas.add(line).setActiveObject(line);
   };
 
+  const addpencilbrush = () => {
+    if (canvas) {
+      canvas.isDrawingMode = true;
+      const pencilBrush = new fabric.PencilBrush(canvas);
+      pencilBrush.color = strokeColor; 
+      pencilBrush.width = 2; 
+      canvas.freeDrawingBrush = pencilBrush;
+    }
+  };
+
   const addPolygon = () => {
     const polygon = new fabric.Polygon(
       [
