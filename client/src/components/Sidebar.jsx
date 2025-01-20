@@ -17,7 +17,7 @@ export class Sidebar extends Component {
           <ul className="space-y-2">
             <li className="px-6">
               <a
-                href="#"
+                href="/dashboard"
                 className="w-fit flex items-center p-2 hover:bg-gray-100 rounded-lg"
                 title="Dashboard"
               >
@@ -47,7 +47,7 @@ export class Sidebar extends Component {
             </li>
           </ul>
         </nav>
-        <div className="mt-80 px-6 py-4">
+        <div className="mt-[40vh] px-6 py-4">
           <div className="">
             <a
               href="/"
