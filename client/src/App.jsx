@@ -12,6 +12,8 @@ import { NotificationProvider } from "./context/NotificationContext";
 import Error from "./components/Error";
 import FabricCanvas from "./components/CanvasArea";
 import DrawingBoard from "./pages/Draw/DrawingBoard";
+import Edit from "./pages/Edit/Edit";
+
 
 
 const App = () => {
@@ -39,6 +41,7 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/canvas" element={<FabricCanvas />} />
           <Route path="/draw" element={<DrawingBoard />} />
+          <Route path="/edit" element={<Edit />} />
         </Routes>
       </NotificationProvider>
     </>
