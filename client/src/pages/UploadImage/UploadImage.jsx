@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Error from "../../components/Error";
 import Sidebar from "../../components/Sidebar";
+import { uploadImageToCloudinary } from './../../config/uploadToCloudinary';
 
 const UploadImage = () => {
   const [loading, setLoading] = useState(false);
@@ -15,60 +16,68 @@ const UploadImage = () => {
   const [currentStep, setCurrentStep] = useState(1); // Step 1: Billboard, Step 2: Banner
   const { showNotification } = useNotification();
   const navigate = useNavigate();
-  const baseURL = "https://b92a-35-203-170-219.ngrok-free.app";
-  const [step2Billboard, setStep2Billboard] = useState(null);
-  const [step2SegmentedBillboard, setStep2SegmentedBillboard] = useState(null);
+
+
+  const [step2Billboard, setStep2Billboard] = useState("");
+  const [step2SegmentedBillboard, setStep2SegmentedBillboard] = useState("");
+  const [billboardId, setBillboardId] = useState("");
+
 
   const fetchData = async () => {
-    if (!billboard) {
-      showNotification("Please upload a billboard image before proceeding.");
-      return;
-    }
-
     try {
       setLoading(true);
 
       if (currentStep === 1) {
+        if (!billboard) {
+          showNotification("Please upload a billboard image before proceeding.");
+          return;
+        }
+        const billboardURL = await uploadImageToCloudinary(billboard);
 
-        const formData = new FormData();
-        if (billboard) formData.append("billboard", billboard);
-        // if (banner) formData.append("banner", banner);
-
-        // Make the API request
         const response = await axios.post(
-          `${baseURL}/generate-billboard`,
-          formData
+          `http://localhost:5000/user/process-billboard`,
+          {
+            billboardImage : billboardURL 
+          },
+          {
+            withCredentials : true,
+          }
         );
-
-        if (response.status === 200) {
+        
+        if (response.status === 201) {
           setError(false);
-          // Store the image in sessionStorage
-          if (response.data.billboard && response.data.segmentedBillboard) {
-            setStep2Billboard(response.data.billboard);
-            setStep2SegmentedBillboard(response.data.segmentedBillboard);
+          if (response.data.billboardData.billboardImage && response.data.billboardData.segmentedImage) {
+            setBillboardId(response.data.billboardData._id);
+            setStep2Billboard(response.data.billboardData.billboardImage);
+            setStep2SegmentedBillboard(response.data.billboardData.segmentedImage);
           }
           setCurrentStep(2);
           setLoading(false);
         }
-
       }
       else if (currentStep === 3) {
+        if (!banner) {
+          showNotification("Please upload a banner image before proceeding.");
+          return;
+        }
+        const bannerURL = await uploadImageToCloudinary(banner);
 
-        const formData = new FormData();
-        if (banner) formData.append("banner", banner);
-        if(billboard) formData.append("billboard",billboard)
-
-        // Make the API request
         const response = await axios.post(
-          `${baseURL}/generate-banner`,
-          formData
+          `http://localhost:5000/user/process-banner`,
+          {
+            billboardId,
+            bannerImage : bannerURL 
+          },
+          {
+            withCredentials : true,
+          }
         );
-
-        if (response.status === 200) {
+        console.log(response.data);
+        if (response.status === 201) {
           setError(false);
           // Store the image in sessionStorage
-          if (response.data.finalBillboard) {  
-            navigate('/success', { state: { finalBillboard: response.data.finalBillboard }});
+          if (response.data) {  
+            navigate('/success', { state: { finalBillboard: response.data.billboardData.processedImage }});
           }
         }
       }
