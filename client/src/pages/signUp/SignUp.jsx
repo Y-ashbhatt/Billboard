@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -7,12 +8,30 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     // Add your signup logic here (e.g., API call)
     if (name && email && password) {
-      console.log("Signed up:", { name, email, password });
-      navigate("/home"); // Redirect to Home page after successful signup
+      try{
+        const response = await axios.post(
+          `http://localhost:5000/user/register`,
+          {name,email,password},
+          {
+            withCredentials : true,
+          }
+        );
+  
+        if(response.status === 201){
+          navigate("/dashboard"); // Redirect to Home page after successful signup
+        }
+        else{
+          alert("Something went wrong!");
+        }
+      }
+      catch(error){
+        alert(error.message);
+      }
+
     } else {
       alert("Please fill in all fields.");
     }

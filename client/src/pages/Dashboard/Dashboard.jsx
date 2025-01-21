@@ -1,15 +1,49 @@
-import React, { Profiler } from "react";
+import React, { Profiler, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
+import axios from "axios";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
 
-  const finalImage = "./preview.jpg";
-  const pictureSVG = "./picture.svg";
-  const ChatGptCredits = "./ChatGptCredits.svg";
-  const settingsSVG = "./settings.svg";
-  const creditsSVG = "./credits.svg";
+  const getUser = async () => {
+    try {
+      
+      const response = await axios.get(
+        `http://localhost:5000/user/`,
+        {
+          withCredentials : true,
+        }
+      );
+    } catch (error) {
+      navigate('/Login');
+    }
+  }
+
+  const getBillboardInfo = async () => {
+    try{
+      const response = await axios.get(
+        `http://localhost:5000/user/getUserInfo`,
+        {
+          withCredentials : true,
+        }
+      );
+      console.log(response.status)
+      if(response.status === 200){
+        setUserData(response.data.userInfo);
+      }
+    }
+    catch(error){
+      alert("Error loading data. Please try after some time.")
+    }
+  }
+
+  useEffect(()=>{
+    getUser()
+    getBillboardInfo();
+  },[]);
+
   return (
     <div className="bg-white min-h-screen flex">
       {/* Sidebar */}
@@ -25,7 +59,10 @@ const Dashboard = () => {
 
           {/* Create Task Button */}
           <button
-            onClick={() => navigate("/upload")}
+            onClick={() => {
+              console.log(userData)
+              navigate("/upload")
+            }}
             className="bg-purple-600 text-white px-6 py-2 rounded-full font-semibold shadow-lg hover:bg-purple-800"
           >
             Create Task
@@ -59,7 +96,7 @@ const Dashboard = () => {
                   Seamlessly replace the banner in your billboard image using AI. Upload your billboard and banner images, and let AI handle the precise alignment and blending.
                 </p>
                 <button
-                  onClick={() => navigate("/upload")}
+                  onClick={() => {navigate("/upload")}}
                   className="bg-purple-600 text-white px-6 py-2 rounded-full font-medium shadow-md hover:bg-purple-700"
                 >
                   Transform with AI
@@ -70,21 +107,17 @@ const Dashboard = () => {
 
 
           {/* Processed Images */}
-          <div className="bg-white rounded-lg shadow-lg p-4">
+          <div className="bg-white rounded-lg shadow-lg p-4 h-fit">
             <h2 className="text-2xl mb-4">Processed Images</h2>
-            <ul className="space-y-4 bg-gray-100 p-5 rounded-2xl">
-              {[
-                "Sunset Over Lake",
-                "City Skyline at Night",
-                "Autumn Forest",
-                "Mountain Range",
-                "Market Street",
-                "Beach at Sunset",
-                "Gaming image",
-              ].map((title, index) => (
+            {userData && userData.Billboard.length === 0 && <div className="bg-gray-100 p-5 rounded-2xl">
+                No Images Processed yet!
+              </div>
+             }
+            {userData && userData.Billboard.length > 0 && <ul className="space-y-4 bg-gray-100 p-5 rounded-2xl">
+              {userData.Billboard.map((item,index) => (
                 <li key={index} className="flex items-center space-x-4">
                   <div className="w-12 h-12 rounded-full bg-gray-300">
-                    <img src={finalImage} className="w-12 h-12 rounded-full" />
+                    <img src={item.processedImage} className="w-12 h-12 rounded-full" />
                   </div>
                   <div>
                     <h3 className="font-semibold">{title}</h3>
@@ -94,13 +127,8 @@ const Dashboard = () => {
                   </div>
                 </li>
               ))}
-            </ul>
-            {/* <button
-              onClick={() => navigate("/upload")}
-              className="w-full mt-4 bg-white border-solid border-2 border-purple-600 text-purple-600 px-6 py-2 rounded-full font-semibold shadow-lg hover:bg-purple-600 hover:text-white"
-            >
-              Create Task
-            </button> */}
+            </ul> }
+            
           </div>
 
           {/* Statistics */}
@@ -109,37 +137,37 @@ const Dashboard = () => {
             <ul className="space-y-4 p-0">
               <li className="flex items-center bg-gray-100 rounded-2xl p-4 border-2 border-gray-200">
                 <span className="font-semibold text-gray-700 mr-7 mb-3">
-                  <img src={creditsSVG} alt="credits" />
+                  <img src="./credits.svg" alt="credits" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">12</div>
+                  <div className="text-4xl">{userData && userData.credits}</div>
                   <div className="text-lg">Remaining Credits</div>
                 </span>
               </li>
               <li className="flex items-center bg-gray-100 rounded-2xl p-4 border-2 border-gray-200">
                 <span className="font-semibold text-gray-700 mr-7 mb-3">
-                  <img src={pictureSVG} alt="pucture" />
+                  <img src='./credits.svg' alt="pucture" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">50</div>
+                  <div className="text-4xl">{userData && userData.Billboard.length}</div>
                   <div className="text-lg">Processed Images</div>
                 </span>
               </li>
               <li className="flex items-center bg-gray-100 rounded-2xl p-4 border-2 border-gray-200">
                 <span className="font-semibold text-gray-700 mr-7 mb-3">
-                  <img src={ChatGptCredits} alt="credits" />
+                  <img src="./ChatGptCredits.svg" alt="credits" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">4</div>
+                  <div className="text-4xl">0</div>
                   <div className="text-lg">Banners Created</div>
                 </span>
               </li>
               <li className="flex items-center bg-gray-100 rounded-2xl p-4 border-2 border-gray-200">
                 <span className="font-semibold text-gray-700 mr-7 mb-3">
-                  <img src={ChatGptCredits} alt="credits" />
+                  <img src="./ChatGptCredits.svg" alt="credits" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">13</div>
+                  <div className="text-4xl">{userData && userData.Billboard.length}</div>
                   <div className="text-lg">Billboards Transformed</div>
                 </span>
               </li>
