@@ -1,7 +1,30 @@
 import React, { Component } from 'react'
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
-export class Sidebar extends Component {
-  render() {
+const Sidebar = () => {
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    try{
+      const response = await axios.get(
+        `http://localhost:5000/user/logout`,
+        {
+          withCredentials : true,
+        }
+      );
+
+      if(response.status === 200){
+        navigate("/Login"); // Redirect to Home page after successful signup
+      }
+      else{
+        alert("Something Went Wrong");
+      }
+    }
+    catch(error){
+      alert(error.message);
+    }
+  };
+
     return (
       <aside className="w-50 fixed">
         <div className="px-2 flex items-center justify-center">
@@ -50,7 +73,8 @@ export class Sidebar extends Component {
         <div className="mt-[40vh] px-6 py-4">
           <div className="">
             <a
-              href="/"
+              href="#"
+              onClick={handleLogout}
               className="w-fit flex items-center p-2 hover:bggray-100 rounded-lg"
               title="Logout"
             >
@@ -62,6 +86,5 @@ export class Sidebar extends Component {
       </aside>
     )
   }
-}
 
 export default Sidebar
