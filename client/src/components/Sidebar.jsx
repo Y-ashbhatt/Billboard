@@ -45,9 +45,19 @@ export class Sidebar extends Component {
                 {/* <span className="ml-3 text-gray-700 font-semibold">Settings</span> */}
               </a>
             </li>
+            <li className="px-6">
+              <a
+                href="/post"
+                className="w-fit flex items-center p-2 hover:bg-gray-100 rounded-lg"
+                title="Profile"
+              >
+                <img className="w-9 h-9" src='/post.png' alt="Post" />
+                {/* <span className="ml-3 text-gray-700 font-semibold">Settings</span> */}
+              </a>
+            </li>
           </ul>
         </nav>
-        <div className="mt-[40vh] px-6 py-4">
+        <div className="mt-[35vh] px-6 py-4">
           <div className="">
             <a
               href="/"

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import apibaseurl from '../../apiConfig/api';
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 import ReactQuill from 'react-quill';
@@ -48,7 +49,7 @@ const PreviewPage = () => {
       return
     }
     try {
-    const response = await axios.post('/save', formData);
+    const response = await axios.post(`${apibaseurl}/save`, formData);
       if(response.status === 200){
         showNotification('Image details saved successfully!');
       }
@@ -59,16 +60,25 @@ const PreviewPage = () => {
   };
 
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!finalBillboardImage) {
-      showNotification('No Image Found To Download')
-      return
+      showNotification('No Image Found To Download');
+      return;
     }
-    const link = document.createElement("a");
-    link.href = finalBillboardImage;
-    link.download = `processed-image.${imageType}`;
-    link.click();
+    try {
+      const response = await fetch(finalBillboardImage);
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `processed-image.${imageType}`;
+      link.click();
+      URL.revokeObjectURL(link.href); 
+    } catch (error) {
+      showNotification('Failed to download the image');
+      console.error('Download error:', error);
+    }
   };
+  
 
   return (
     <div className="bg-white min-h-screen flex flex-col items-center p-4">
