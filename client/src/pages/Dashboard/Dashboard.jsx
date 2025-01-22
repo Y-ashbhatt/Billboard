@@ -6,15 +6,19 @@ import axios from "axios";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
+  const [initialLoader, setInitialLoader] = useState(false);
 
   const getUser = async () => {
     try {
       const response = await axios.get(
         `http://localhost:5000/user/`,
         {
-          withCredentials : true,
+          withCredentials: true,
         }
       );
+      if (response.status === 200) {
+        setInitialLoader(true);
+      }
     }
     catch (error) {
       navigate('/Login');
@@ -22,29 +26,30 @@ const Dashboard = () => {
   }
 
   const getBillboardInfo = async () => {
-    try{
+    try {
       const response = await axios.get(
         `http://localhost:5000/user/getUserInfo`,
         {
-          withCredentials : true,
+          withCredentials: true,
         }
       );
-      if(response.status === 200){
+      if (response.status === 200) {
         setUserData(response.data.userInfo);
       }
+      console.log(response.data.userInfo);
     }
-    catch(error){
+    catch (error) {
       console.log("no proccessed image found")
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     getUser()
     getBillboardInfo();
-  },[]);
+  }, []);
 
   return (
-    <div className="bg-white min-h-screen flex">
+    initialLoader && <div className="bg-white min-h-screen flex">
       {/* Sidebar */}
       <Sidebar />
 
@@ -70,8 +75,8 @@ const Dashboard = () => {
         {/* Dashboard Content */}
         <div className="grid grid-cols-3 gap-16">
 
-        {/* TOOLS */}
-        <div className="bg-white rounded-lg shadow-lg  p-2">
+          {/* TOOLS */}
+          <div className="bg-white rounded-lg shadow-lg  p-2">
             <div className="p-4">
               {/* Create Banner Section */}
               <div className="bg-white rounded-lg shadow-lg p-4 items-start mb-4">
@@ -94,7 +99,7 @@ const Dashboard = () => {
                   Seamlessly replace the banner in your billboard image using AI. Upload your billboard and banner images, and let AI handle the precise alignment and blending.
                 </p>
                 <button
-                  onClick={() => {navigate("/upload")}}
+                  onClick={() => { navigate("/upload") }}
                   className="bg-purple-600 text-white px-6 py-2 rounded-full font-medium shadow-md hover:bg-purple-700"
                 >
                   Transform with AI
@@ -108,25 +113,26 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-lg p-4 h-fit">
             <h2 className="text-2xl mb-4">Processed Images</h2>
             {userData && userData.processedImageData.length === 0 && <div className="bg-gray-100 p-5 rounded-2xl">
-                No Images Processed yet!
-              </div>
-             }
+              No Images Processed yet!
+            </div>
+            }
             {userData && userData.processedImageData.length > 0 && <ul className="space-y-4 bg-gray-100 p-5 rounded-2xl">
-              {userData.processedImageData.map((item,index) => (
+              {userData.processedImageData.map((item, index) => (
                 <li key={index} className="flex items-center space-x-4">
-                  <div className="w-12 h-12 rounded-full bg-gray-300">
-                    <img src={item.processedImage} className="w-12 h-12 rounded-full" />
+                  <div className="w-16 h-16 rounded-full bg-gray-300">
+                    <img src={item.processedImage.imageUrl} className="w-16 h-16 rounded-full" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">{title}</h3>
-                    <p className="text-sm text-gray-500">
-                      A brief description of the image.
-                    </p>
+                    <h3 className="font-semibold">{item.processedImage.title}</h3>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: item.processedImage.description,
+                      }}
+                    />
                   </div>
                 </li>
               ))}
-            </ul> }
-            
+            </ul>}
           </div>
 
           {/* Statistics */}

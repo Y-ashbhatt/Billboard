@@ -28,7 +28,7 @@ const LogIn = () => {
         }
       }
       catch(error){
-        alert(error.message);
+        alert("Invalid Credentials");
       }
     } else {
       alert("Please fill in all fields.");

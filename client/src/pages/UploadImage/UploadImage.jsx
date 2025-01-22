@@ -78,7 +78,7 @@ const UploadImage = () => {
           setError(false);
           // Store the image in sessionStorage
           if (response.data) {  
-            navigate('/success', { state: { finalBillboard: response.data.billboardData.processedImage }});
+            navigate('/success', { state: { finalBillboard: response.data.billboardData.processedImage.imageUrl , billboardId : response.data.billboardData._id }});
           }
         }
       }
