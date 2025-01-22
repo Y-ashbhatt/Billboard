@@ -9,14 +9,14 @@ const Dashboard = () => {
 
   const getUser = async () => {
     try {
-      
       const response = await axios.get(
         `http://localhost:5000/user/`,
         {
           withCredentials : true,
         }
       );
-    } catch (error) {
+    }
+    catch (error) {
       navigate('/Login');
     }
   }
@@ -29,13 +29,12 @@ const Dashboard = () => {
           withCredentials : true,
         }
       );
-      console.log(response.status)
       if(response.status === 200){
         setUserData(response.data.userInfo);
       }
     }
     catch(error){
-      alert("Error loading data. Please try after some time.")
+      console.log("no proccessed image found")
     }
   }
 
@@ -60,7 +59,6 @@ const Dashboard = () => {
           {/* Create Task Button */}
           <button
             onClick={() => {
-              console.log(userData)
               navigate("/upload")
             }}
             className="bg-purple-600 text-white px-6 py-2 rounded-full font-semibold shadow-lg hover:bg-purple-800"
@@ -109,12 +107,12 @@ const Dashboard = () => {
           {/* Processed Images */}
           <div className="bg-white rounded-lg shadow-lg p-4 h-fit">
             <h2 className="text-2xl mb-4">Processed Images</h2>
-            {userData && userData.Billboard.length === 0 && <div className="bg-gray-100 p-5 rounded-2xl">
+            {userData && userData.processedImageData.length === 0 && <div className="bg-gray-100 p-5 rounded-2xl">
                 No Images Processed yet!
               </div>
              }
-            {userData && userData.Billboard.length > 0 && <ul className="space-y-4 bg-gray-100 p-5 rounded-2xl">
-              {userData.Billboard.map((item,index) => (
+            {userData && userData.processedImageData.length > 0 && <ul className="space-y-4 bg-gray-100 p-5 rounded-2xl">
+              {userData.processedImageData.map((item,index) => (
                 <li key={index} className="flex items-center space-x-4">
                   <div className="w-12 h-12 rounded-full bg-gray-300">
                     <img src={item.processedImage} className="w-12 h-12 rounded-full" />
@@ -149,7 +147,7 @@ const Dashboard = () => {
                   <img src='./credits.svg' alt="pucture" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">{userData && userData.Billboard.length}</div>
+                  <div className="text-4xl">{userData && userData.processedImageData.length}</div>
                   <div className="text-lg">Processed Images</div>
                 </span>
               </li>
@@ -167,7 +165,7 @@ const Dashboard = () => {
                   <img src="./ChatGptCredits.svg" alt="credits" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">{userData && userData.Billboard.length}</div>
+                  <div className="text-4xl">{userData && userData.processedImageData.length}</div>
                   <div className="text-lg">Billboards Transformed</div>
                 </span>
               </li>
