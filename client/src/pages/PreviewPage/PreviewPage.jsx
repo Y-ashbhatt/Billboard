@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import apibaseurl from '../../apiConfig/api';
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 import ReactQuill from 'react-quill';
@@ -65,9 +66,10 @@ const PreviewPage = () => {
 
 
   const handleDownload = async () => {
+  const handleDownload = async () => {
     if (!finalBillboardImage) {
-      showNotification('No Image Found To Download')
-      return
+      showNotification('No Image Found To Download');
+      return;
     }
     try {
       const response = await fetch(finalBillboardImage);
@@ -91,6 +93,7 @@ const PreviewPage = () => {
       showNotification("Error while downloading image")
     }
   };
+  
 
   return (
     <div className="bg-white min-h-screen flex flex-col items-center p-4">
