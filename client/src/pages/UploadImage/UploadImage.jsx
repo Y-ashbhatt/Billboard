@@ -66,7 +66,8 @@ const UploadImage = () => {
           `http://localhost:5000/user/process-banner`,
           {
             billboardId,
-            bannerImage : bannerURL 
+            billboardImage : step2Billboard,
+            bannerImage : bannerURL
           },
           {
             withCredentials : true,
