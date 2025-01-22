@@ -9,8 +9,10 @@ const PreviewPage = () => {
 
   const location = useLocation();
   const finalBillboardImage = location.state?.finalBillboard || '/billboardimg.jpeg';
+  const billboardId = location.state?.billboardId;
+  console.log(billboardId);
   const navigate = useNavigate('/upload')
-  const {showNotification} = useNotification()
+  const { showNotification } = useNotification()
   const [imageType, setimageType] = useState('png')
   const [formData, setFormData] = useState({
     title: '',
@@ -18,6 +20,7 @@ const PreviewPage = () => {
     link: '',
     description: '',
     type: '',
+    billboardId : '',
   });
 
   const handleChange = (e) => {
@@ -43,13 +46,15 @@ const PreviewPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(!formData.title || !formData.tags || !formData.link || !formData.description || !formData.type){
+    if (!formData.title || !formData.tags || !formData.link || !formData.description || !formData.type) {
       showNotification('Please Fill All Information')
       return
     }
     try {
-    const response = await axios.post('/save', formData);
-      if(response.status === 200){
+      let body = formData;
+      body = {...body, billboardId : billboardId}
+      const response = await axios.post('http://localhost:5000/user/save-final-billboard', body, { withCredentials: true });
+      if (response.status === 200) {
         showNotification('Image details saved successfully!');
       }
     } catch (error) {
@@ -59,15 +64,32 @@ const PreviewPage = () => {
   };
 
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!finalBillboardImage) {
       showNotification('No Image Found To Download')
       return
     }
-    const link = document.createElement("a");
-    link.href = finalBillboardImage;
-    link.download = `processed-image.${imageType}`;
-    link.click();
+    try {
+      const response = await fetch(finalBillboardImage);
+      if (!response.ok) {
+        showNotification('Failed to fetch image from the server.');
+        return;
+      }
+
+      // Convert the response to a Blob
+      const blob = await response.blob();
+
+      // Create a URL for the Blob
+      const blobUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `processed-image.${imageType}`;
+      link.click();
+    }
+    catch (error) {
+      showNotification("Error while downloading image")
+    }
   };
 
   return (
