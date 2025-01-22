@@ -9,46 +9,7 @@ import CodeOffIcon from '@mui/icons-material/CodeOff';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const Post = () => {
-
-    const [images, setImages] = useState([
-        {
-            url: "/billboardimg.jpeg",
-            link: "https://www.youtube.com/watch?v=XOFAgsa8eBU",
-            description: "An in-depth guide on React.js for beginners.",
-            tags: ["React", "JavaScript", "Frontend", "Guide"],
-            title: "React.js Beginner's Tutorial",
-        },
-        {
-            url: "/billboardimg.jpeg",
-            link: "https://www.youtube.com/watch?v=XOFAgsa8eBU",
-            description: "An in-depth guide on React.js for beginners.",
-            tags: ["React", "JavaScript", "Frontend", "Guide"],
-            title: "React.js Beginner's Tutorial",
-        },
-        {
-            url: "/billboardimg.jpeg",
-            link: "https://www.youtube.com/watch?v=XOFAgsa8eBU",
-            description: "An in-depth guide on React.js for beginners.",
-            tags: ["React", "JavaScript", "Frontend", "Guide"],
-            title: "React.js Beginner's Tutorial",
-        },
-        {
-            url: "/billboardimg.jpeg",
-            link: "https://www.youtube.com/watch?v=XOFAgsa8eBU",
-            description: "An in-depth guide on React.js for beginners.",
-            tags: ["React", "JavaScript", "Frontend", "Guide"],
-            title: "React.js Beginner's Tutorial",
-        },
-        {
-            url: "/billboardimg.jpeg",
-            link: "https://mui.com/material-ui/material-icons/?query=co",
-            description: "An in-depth guide on React.js for beginners.",
-            tags: ["React", "JavaScript", "Frontend", "Guide"],
-            title: "React.js Beginner's Tutorial",
-        },
-        // More sample data...
-    ]);
-
+    const [images, setImages] = useState([]);
     const { showNotification } = useNotification();
     const [selectedEmbedCode, setSelectedEmbedCode] = useState("");
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -56,9 +17,10 @@ const Post = () => {
     useEffect(() => {
         (async () => {
             try {
-                const response = await axios.get(`${apibaseurl}/post`);
+                const response = await axios.get(`http://localhost:5000/user/getUserInfo`,{withCredentials : true});
                 if (response.status === 200) {
                     // setImages(response.data);
+                    setImages(response.data.userInfo.processedImageData)
                 }
             } catch (error) {
                 console.log(error);
@@ -69,9 +31,9 @@ const Post = () => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await axios.delete(`${apibaseurl}/delete-post?id=${id}`);
+            const response = await axios.delete(`http://localhost:5000/user/delete-billboard/${id}`,{withCredentials : true});
             if (response.status === 200) {
-                setImages(images.filter((image) => image.id !== id));
+                setImages(images.filter((image) => image._id !== id));
                 showNotification("Image deleted successfully");
             }
         } catch (error) {
@@ -105,28 +67,28 @@ const Post = () => {
             <div className="min-h-screen bg-gray-100 p-6 ml-28">
                 <h1 className="text-2xl font-bold mb-6 text-gray-800">Your Posts</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {images.map((image, index) => (
+                    {images.map((item, index) => (
                         <div
                             key={index}
                             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200"
                         >
                             <img
-                                src={image.url}
+                                src={item.processedImage.imageUrl}
                                 alt={`Saved Image ${index + 1}`}
                                 className="w-full h-44 object-cover"
                             />
                             <div className="p-4">
-                                <h2 className="text-lg font-semibold text-gray-800 truncate">{image.title}</h2>
+                                <h2 className="text-lg font-semibold text-gray-800 truncate">{item.processedImage.title}</h2>
                                 {/* <p className="text-sm text-gray-600 mt-2 truncate">{image.description}</p> */}
                                 <div className="flex justify-between items-center mt-4">
                                     <button
-                                        onClick={() => handleCodeIconClick(image)}
+                                        onClick={() => handleCodeIconClick(item.processedImage)}
                                         className="px-3 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition duration-200"
                                     >
                                         <CodeOffIcon fontSize="small" />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(image._id)}
+                                        onClick={() => handleDelete(item._id)}
                                         className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
                                     >
                                         <DeleteForeverIcon fontSize="small" />
