@@ -13,6 +13,7 @@ import Error from "./components/Error";
 import FabricCanvas from "./components/CanvasArea";
 import DrawingBoard from "./pages/Draw/DrawingBoard";
 import Edit from "./pages/Edit/Edit";
+import Post from "./pages/Post/Post";
 
 
 
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/canvas" element={<FabricCanvas />} />
           <Route path="/draw" element={<DrawingBoard />} />
           <Route path="/edit" element={<Edit />} />
+          <Route path="/post" element={<Post />} />
         </Routes>
       </NotificationProvider>
     </>
