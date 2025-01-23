@@ -37,13 +37,13 @@ const UploadImage = () => {
         const response = await axios.post(
           `http://localhost:5000/user/process-billboard`,
           {
-            billboardImage : billboardURL 
+            billboardImage: billboardURL
           },
           {
-            withCredentials : true,
+            withCredentials: true,
           }
         );
-        
+
         if (response.status === 201) {
           setError(false);
           if (response.data.billboardData.billboardImage && response.data.billboardData.segmentedImage) {
@@ -66,19 +66,19 @@ const UploadImage = () => {
           `http://localhost:5000/user/process-banner`,
           {
             billboardId,
-            billboardImage : step2Billboard,
-            bannerImage : bannerURL
+            billboardImage: step2Billboard,
+            bannerImage: bannerURL
           },
           {
-            withCredentials : true,
+            withCredentials: true,
           }
         );
         console.log(response.data);
         if (response.status === 201) {
           setError(false);
           // Store the image in sessionStorage
-          if (response.data) {  
-            navigate('/success', { state: { finalBillboard: response.data.billboardData.processedImage.imageUrl , billboardId : response.data.billboardData._id }});
+          if (response.data) {
+            navigate('/success', { state: { finalBillboard: response.data.billboardData.processedImage.imageUrl, billboardId: response.data.billboardData._id } });
           }
         }
       }
@@ -214,15 +214,23 @@ const UploadImage = () => {
                     label="Choose Banner Image"
                     onFileChange={(file) => setBanner(file)}
                   />
-                  <Button
-                    label={loading ? "Just a moment, Processing..." : "Process with AI"}
-                    onClick={handleStepThree}
-                    className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-blue-700"
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    disabled={loading}
-                  />
+                  <div className="w-full flex justify-center items-center gap-5">
+                    <Button
+                      label={loading ? "Just a moment, Processing..." : "Process with AI"}
+                      onClick={handleStepThree}
+                      className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-blue-700"
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      disabled={loading}
+                    />
+                    <button
+                      className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      onClick={() => navigate('/create-banner')}
+                    >
+                      Create Banner
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

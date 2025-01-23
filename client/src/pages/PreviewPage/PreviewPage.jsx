@@ -5,6 +5,13 @@ import axios from 'axios';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNotification } from '../../context/NotificationContext';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { Info as InfoIcon, Link as LinkIcon, Description as DescriptionIcon, Html as HtmlIcon, WhatsApp as WhatsAppIcon, Mail as MailIcon, ListAlt as ListAltIcon } from '@mui/icons-material';
+import { MenuItem, FormControl, InputLabel, Select, Box } from '@mui/material';
+import Popup from './_component/Popup';
+import AllOutIcon from '@mui/icons-material/AllOut';
+
+
 
 const PreviewPage = () => {
 
@@ -15,48 +22,63 @@ const PreviewPage = () => {
   const navigate = useNavigate('/upload')
   const { showNotification } = useNotification()
   const [imageType, setimageType] = useState('png')
-  const [formData, setFormData] = useState({
-    title: '',
-    tags: '',
-    link: '',
-    description: '',
-    type: '',
-    billboardId : '',
-  });
+  const [currentStep, setcurrentStep] = useState(1)
 
+  // Managing States for marking coordinate
+  const [isTracking, setIsTracking] = useState(false);
+  const [currentCoordinates, setCurrentCoordinates] = useState({ x: 0, y: 0 });
+  const [actions, setActions] = useState([]);
+  const [currentAction, setcurrentAction] = useState({
+    coordinate: currentCoordinates,
+    actionType: "",
+    textFormat: "",
+    customhtml: "",
+    whatsappnumber: "",
+    mail: "",
+    title: "",
+    link: "",
+    description: "",
+  });
+  const [coordinatesLinks, setCoordinatesLinks] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  // const [urlInput, setUrlInput] = useState(''); 
+
+  // Funtion to handle form input field
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setcurrentAction((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
-  const handleDescriptionChange = (value) => {
-    setFormData((prevData) => ({
+  // Funtion to handle change of description filed
+  const handleOptionformChange = (value) => {
+    setcurrentAction((prevData) => ({
       ...prevData,
       description: value,
     }));
   };
 
-
+  // Funtion to handle change of image type
   const handleImageTypeChange = (e) => {
     setimageType(e.target.value)
   }
 
-
+  // Funtion to save the details in the database 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.title || !formData.tags || !formData.link || !formData.description || !formData.type) {
-      showNotification('Please Fill All Information')
-      return
-    }
+
+    // if (!currentAction.title || !currentAction.tags || !currentAction.link || !currentAction.description || !currentAction.type) {
+    //   showNotification('Please Fill All Information')
+    //   return
+    // }
     try {
-      let body = formData;
-      body = {...body, billboardId : billboardId}
+      let body = actions;
+      body = { ...body, billboardId: billboardId }
       const response = await axios.post('http://localhost:5000/user/save-final-billboard', body, { withCredentials: true });
       if (response.status === 200) {
         showNotification('Image details saved successfully!');
+        setcurrentStep(2)
       }
     } catch (error) {
       console.error('Error saving data:', error);
@@ -64,6 +86,31 @@ const PreviewPage = () => {
     }
   };
 
+
+  const handleSaveAction = () => {
+    if (!currentAction.actionType) {
+      showNotification("Please fill out the action type before saving.");
+      return;
+    }
+    setActions((prev) => [...prev, currentAction]);
+    setcurrentAction({
+      coordinate: { x: 0, y: 0 },
+      actionType: "",
+      textFormat: "",
+      customhtml: "",
+      whatsappnumber: "",
+      mail: "",
+      title: "",
+      link: "",
+      description: "",
+    });
+    showNotification('Action Added Sucessfully')
+    console.log(actions)
+    setCurrentCoordinates({ x: 0, y: 0 })
+  }
+
+
+  // Funtion to download Preview Image
   const handleDownload = async () => {
     if (!finalBillboardImage) {
       showNotification('No Image Found To Download');
@@ -91,132 +138,348 @@ const PreviewPage = () => {
       showNotification("Error while downloading image")
     }
   };
+
+
+  // Function to handle the click on the image and capture the coordinates
+  const handleImageClick = (e) => {
+    const rect = e.target.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setCurrentCoordinates({ x, y });
+    setcurrentAction((prev) => ({
+      ...prev,
+      coordinate: { x, y },
+    }));
+  };
+
+
+  const clickSavedAction = (item) => {
+    setSelectedItem(item);
+  };
+
   
+  const closePopup = () => {
+    setSelectedItem(null);
+  };
+
+
 
   return (
     <div className="bg-white min-h-screen flex flex-col items-center p-4">
-      {/* <h1 className="text-3xl font-bold text-purple-600 mb-6">Preview Your Billboard</h1> */}
-
-      <div className="flex w-full max-w-7xl gap-8">
+      <div className="flex items-center flex-col w-full max-w-7xl ">
         {/* Left Section with Image */}
-        <div className="flex-1 bg-gray-100 w-1/2 p-4 rounded-lg shadow-lg">
-          <div className="text-center mb-4">
-            <h2 className="text-xl font-semibold text-purple-600">Preview Image</h2>
-            <div className="mt-4">
-              <img src={finalBillboardImage} alt="Billboard Preview" className="w-full h-auto rounded-md" />
-            </div>
-            <div className="mt-4 ">
-              <button type="button" className="bg-purple-600 text-white py-2 px-7 rounded-md hover:bg-gray-400 focus:outline-none"
-                onClick={handleDownload} >
-                Download
-              </button>
-              <select
-                name="imageType"
-                value={imageType}
-                onChange={handleImageTypeChange}
-                className="mt-2 p-2 w-fit rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-              >
-                <option value="jpg">JPG</option>
-                <option value="png">PNG</option>
-                <option value="jpeg">JPEG</option>
-              </select>
+        {currentStep == 1 && (
+          <div className="flex-1 bg-gray-100 w-1/2 p-4 rounded-lg shadow-lg">
+            <div className="text-center mb-4">
+              <h2 className="text-2xl ">Preview Image</h2>
+              <div className="mt-4 px-8 ">
+                <img src={finalBillboardImage} alt="Billboard Preview" className=" h-[70vh] rounded-md block mx-auto" />
+
+              </div>
+              <div className="mt-4 ">
+                <button type="button" className="bg-purple-600 text-white py-2 px-7 rounded-md hover:bg-gray-400 focus:outline-none"
+                  onClick={handleDownload} >
+                  Download
+                </button>
+                <select
+                  name="imageType"
+                  value={imageType}
+                  onChange={handleImageTypeChange}
+                  className="mt-2 p-2 w-fit rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                >
+                  <option value="jpg">JPG</option>
+                  <option value="png">PNG</option>
+                  <option value="jpeg">JPEG</option>
+                </select>
+                <button type="button" className="bg-purple-600 text-white py-2 px-7 rounded-md hover:bg-gray-400 ml-8 focus:outline-none"
+                  onClick={() => setcurrentStep(2)}  >
+                  Add Interactivity
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Right Section with Input Fields */}
-        <div className="flex-1 p-4 w-1/2 bg-gray-50 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-purple-600 mb-6">Enter Details</h2>
+        {currentStep == 2 && (
+          <>
+            <h1 className='text-[27px] underline text-gray-700'>Make Image Clickable</h1>
+            <div className="flex justify-evenly gap-4 p-4 w-full bg-gray-50 rounded-lg shadow-lg">
+              <div className="mt-4 w-1/2 mx-8 relative">
+                <img src={finalBillboardImage} alt="Billboard Preview" className=" w-full rounded-md block mx-auto" onClick={handleImageClick} />
 
-          {/* Form Section */}
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="title" className="text-sm font-medium text-gray-700">Title</label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="w-full p-2 mt-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-              </div>
+                {actions.map((item, index) => (
+                  <div
+                    key={index}
+                    className="absolute"
+                    style={{
+                      left: `${item.coordinate.x}px`,
+                      top: `${item.coordinate.y}px`,
+                    }}
+                  >
+                    <div className=" rounded-full absolute transform -translate-x-2 -translate-y-2">
+                      <AllOutIcon style={{ fontSize: '35px', color: 'red' }} onClick={() => clickSavedAction(item)} />
+                    </div>
+                  </div>
+                ))}
 
-              <div>
-                <label htmlFor="tags" className="text-sm font-medium text-gray-700">Tags</label>
-                <input
-                  type="text"
-                  id="tags"
-                  name="tags"
-                  value={formData.tags}
-                  onChange={handleChange}
-                  className="w-full p-2 mt-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-              </div>
 
-              <div>
-                <label htmlFor="link" className="text-sm font-medium text-gray-700">Link (Website or Video)</label>
-                <input
-                  type="url"
-                  id="link"
-                  name="link"
-                  value={formData.link}
-                  onChange={handleChange}
-                  className="w-full p-2 mt-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="description" className="text-sm font-medium text-gray-700">Description</label>
-                <ReactQuill
-                  value={formData.description}
-                  onChange={handleDescriptionChange}
-                  className="w-full mt-2"
-                  modules={{
-                    toolbar: [
-                      [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-                      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                      ['bold', 'italic', 'underline'],
-                      [{ 'align': [] }],
-                      // ['link', 'image'],
-                      ['blockquote'],
-                      [{ 'color': [] }],
-                      // [{ 'color': [] }, { 'background': [] }],
-                    ],
+                <div
+                  className="absolute"
+                  style={{
+                    left: `${currentCoordinates?.x}px`,
+                    top: `${currentCoordinates?.y}px`,
+                    visibility: `${isTracking ? 'visible' : 'hidden'}`
                   }}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="type" className="text-sm font-medium text-gray-700"> Type</label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  className="w-full p-2 mt-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
                 >
-                  <option value="branding">Branding</option>
-                  <option value="promotion">Promotion</option>
-                  <option value="awareness">Awareness</option>
-                </select>
+                  <div className=" rounded-full absolute transform -translate-x-2 -translate-y-2">
+                    <Brightness7Icon style={{ fontSize: '35px', color: 'blue' }} />
+                  </div>
+                </div>
+              </div>
+
+              {selectedItem && (
+                <Popup
+                  data={selectedItem} // Pass the selected item's data as props
+                  onClose={closePopup} // Pass the closePopup function as props
+                />
+              )}
+
+              <div className="w-full max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
+
+                {/* Toggle Button */}
+                <button
+                  onClick={() => setIsTracking(true)}
+                  className="w-full text-sm font-medium bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-2 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-purple-300 mb-4"
+                >
+                  {isTracking ? 'Note: Click on the image area to add an action' : 'Add Action'}
+                </button>
+
+                {/* Additional Options */}
+                {isTracking && (
+                  <div className='flex flex-col justify-between h-full'>
+                    <div className="mt-6">
+
+                      {/* Dropdown */}
+                      <div className="mb-6">
+                        <FormControl fullWidth variant="outlined" className="w-[60%]">
+                          <InputLabel id="section-action-label" className="text-gray-700">
+                            Select The Action Type To Perform
+                          </InputLabel>
+                          <Select
+                            labelId="section-action-label"
+                            id="section-action"
+                            name="actionType"
+                            value={currentAction.actionType}
+                            onChange={handleChange}
+                            label="Select The Action Type To Perform"
+                            className="bg-white shadow-sm rounded-lg   "
+                          >
+                            <MenuItem value="" disabled>
+                              <em>Select Action</em>
+                            </MenuItem>
+                            <MenuItem value="whatsapp">
+                              <Box display="flex" alignItems="center">
+                                <WhatsAppIcon className="mr-2 text-green-600" />
+                                WhatsApp
+                              </Box>
+                            </MenuItem>
+                            <MenuItem value="mail">
+                              <Box display="flex" alignItems="center">
+                                <MailIcon className="mr-2 text-blue-600" />
+                                Email
+                              </Box>
+                            </MenuItem>
+                            <MenuItem value="customhtml">
+                              <Box display="flex" alignItems="center">
+                                <HtmlIcon className="mr-2 text-orange-600" />
+                                Custom HTML
+                              </Box>
+                            </MenuItem>
+                            <MenuItem value="optionform">
+                              <Box display="flex" alignItems="center">
+                                <ListAltIcon className="mr-2 text-purple-600" />
+                                Option Form
+                              </Box>
+                            </MenuItem>
+                            <MenuItem value="product">
+                              <Box display="flex" alignItems="center">
+                                <InfoIcon className="mr-2 text-teal-600" />
+                                Product Information
+                              </Box>
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </div>
+
+
+                      {/* Input Form Placeholder */}
+
+
+                      <div className="mt-4 p-6 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-700 shadow-sm mb-8">
+
+                        {currentAction.actionType === 'product' && (
+                          <>
+                            <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
+                              Product Details
+                            </h3>
+                            <div className="mb-4">
+                              <label htmlFor="title" className=" text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <InfoIcon className="mr-2 text-gray-500" />
+                                Title
+                              </label>
+                              <input
+                                type="text"
+                                id="title"
+                                name="title"
+                                value={currentAction.title}
+                                onChange={handleChange}
+                                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label htmlFor="link" className=" text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <LinkIcon className="mr-2 text-gray-500" />
+                                Link
+                              </label>
+                              <input
+                                type="url"
+                                id="link"
+                                name="link"
+                                value={currentAction.link}
+                                onChange={handleChange}
+                                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <label htmlFor="description" className=" text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <DescriptionIcon className="mr-2 text-gray-500" />
+                                Description
+                              </label>
+                              <ReactQuill
+                                value={currentAction.description}
+                                onChange={handleOptionformChange}
+                                className="w-full mt-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-purple-600"
+                                modules={{
+                                  toolbar: [
+                                    [{ header: '1' }, { header: '2' }, { font: [] }],
+                                    [{ list: 'ordered' }, { list: 'bullet' }],
+                                    ['bold', 'italic', 'underline'],
+                                    [{ align: [] }],
+                                    ['blockquote'],
+                                    [{ color: [] }],
+                                  ],
+                                }}
+                              />
+
+                            </div>
+                          </>
+                        )}
+
+                        {currentAction.actionType === 'optionform' && (
+                          <div>
+                            <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
+                              Text Information
+                            </h3>
+                            <label htmlFor="description" className=" text-sm font-medium text-gray-700 mb-2 flex items-center">
+                              <DescriptionIcon className="mr-2 text-gray-500" />
+                              Enter Information
+                            </label>
+                            <textarea
+                              id="description"
+                              name="textFormat"
+                              value={currentAction.textFormat}
+                              onChange={handleChange}
+                              className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                            />
+                          </div>
+                        )}
+
+                        {currentAction.actionType === 'customhtml' && (
+                          <div>
+                            <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
+                              Custom HTML
+                            </h3>
+                            <textarea
+                              name="customhtml"
+                              value={currentAction.customhtml}
+                              onChange={handleChange}
+                              className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                            />
+                          </div>
+                        )}
+
+                        {currentAction.actionType === 'whatsapp' && (
+                          <div>
+                            <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
+                              WhatsApp
+                            </h3>
+                            <label htmlFor="whatsapp" className=" text-sm font-medium text-gray-700 mb-2 flex items-center">
+                              <WhatsAppIcon className="mr-2 text-gray-500" />
+                              WhatsApp Number
+                            </label>
+                            <input
+                              type="text"
+                              id="whatsapp"
+                              name="whatsappnumber"
+                              value={currentAction.whatsappnumber}
+                              onChange={handleChange}
+                              className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                            />
+                          </div>
+                        )}
+
+                        {currentAction.actionType === 'mail' && (
+                          <div>
+                            <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
+                              Mail
+                            </h3>
+                            <label htmlFor="mail" className=" text-sm font-medium text-gray-700 mb-2 flex items-center">
+                              <MailIcon className="mr-2 text-gray-500" />
+                              Email Address
+                            </label>
+                            <input
+                              type="text"
+                              id="mail"
+                              value={currentAction.mail}
+                              name="mail"
+                              onChange={handleChange}
+                              className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <button
+                        className="w-fit text-sm font-medium bg-purple-600 text-white px-6 py-3 block rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-300"
+                        onClick={handleSaveAction}
+                      >
+                        Save Action
+                      </button>
+                    </div>
+                    <button
+                      className="w-fit text-sm font-medium bg-purple-600 mb-10 text-white px-6 py-3 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-300"
+                      onClick={handleSubmit}
+                    >
+                      Submit Actions
+                    </button>
+                  </div>
+                )}
+
               </div>
             </div>
-
-            <div className="mt-6 flex justify-between">
-              <button
-                type="submit"
-                className="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
-              >
-                Save
-              </button>
-
-            </div>
-          </form>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 export default PreviewPage;
+
+
+
+
+
