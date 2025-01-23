@@ -1,6 +1,7 @@
 const billboardModel = require('../models/Billboard');
 const userModel = require('../models/User');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { addBillboard, addBanner } = require('./dbController');
 
 exports.getProcessedBillboards = async (req,res,next) => {
     try {
@@ -12,19 +13,20 @@ exports.getProcessedBillboards = async (req,res,next) => {
         });
         if(userInfo.length === 0) return res.status(404).json({msg : "No Processed Images"});
         res.status(200).json({userInfo : {processedImageData, credits : userInfo.credits}});
-    } catch (error) {
+    } catch (error){
         next(error);
     }
 }
 
 exports.processBillboard = async (req,res,next) => {
     try {
-        const { billboardImage } = req.body;
-        const { email } = req.user;
+        const { email,id } = req.user;
+
+        const { billboardImage,title,description } = req.body;
         if(!billboardImage) return res.status(400).json({msg : "Image is required"});
-        const userCheck = await userModel.findOne({email});
-        if(userCheck.credits === 0) return res.status(400).json({msg : "Not enough credits"});
+
         //code for flask API call here
+
         const response = await fetch("https://0342-34-91-57-90.ngrok-free.app/generate-billboard", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -33,10 +35,11 @@ exports.processBillboard = async (req,res,next) => {
         const imageData = await response.json();
         const segmentedImage = imageData.segmentedBillboardUrl;
 
-        const billboardData = await billboardModel.create({billboardImage,segmentedImage});
-        const user = await userModel.findOneAndUpdate({email},{$push : {Billboard : billboardData._id}});
+        //api call code ends here
 
-        return res.status(201).json({billboardData});
+        const campaignId = await addBillboard(id,billboardImage,segmentedImage,title,description);
+        if(!campaignId) return res.status(400).json({msg : "Error creating campaign"}); 
+        return res.status(201).json({id : campaignId, billboardImage, segmentedImage});
     }
     catch (error){
         next(error)
@@ -45,8 +48,8 @@ exports.processBillboard = async (req,res,next) => {
 
 exports.processBanner = async (req,res,next) => {
     try {
-        const { email } = req.user;
-        const { billboardId, bannerImage, billboardImage } = req.body;
+        const { email,id } = req.user;
+        const { campaignId, bannerImage, billboardImage } = req.body;
         if(!bannerImage) return res.status(400).json({msg : "Image is required"});
 
         const response = await fetch("https://0342-34-91-57-90.ngrok-free.app/generate-banner", {
@@ -56,9 +59,9 @@ exports.processBanner = async (req,res,next) => {
         });
         const imageData =  await response.json();
         const processedImage = imageData.finalBillboardUrl;
-        const billboardData = await billboardModel.findOneAndUpdate({_id : billboardId},{$set : {bannerImage,processedImage : {imageUrl : processedImage}}},{returnDocument : 'after'});
-        const user = await userModel.findOneAndUpdate({email},{$inc : {credits : -10}});
-        return res.status(201).json({billboardData});
+        const result = await addBanner(campaignId,bannerImage,processedImage);
+        if(result.affectedRows === 0) return res.status(400).json({msg : "No record with given id found"});
+        res.status(201).json({processedImage});
     }
     catch (error){
         next(error)

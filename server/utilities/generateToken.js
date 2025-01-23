@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 //Generate token to store in cookies
 const generateToken = function(user){
     try{
-        const token = jwt.sign({email:user.email, id:user._id},process.env.JWT_KEY);
+        const token = jwt.sign({email:user.email, id:user.userId}, process.env.JWT_KEY);
         if(token) return token;
         else return false;
     }

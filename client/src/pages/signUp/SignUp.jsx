@@ -5,17 +5,18 @@ import axios from "axios";
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     // Add your signup logic here (e.g., API call)
-    if (name && email && password) {
+    if (name && email && mobileNumber && password) {
       try{
         const response = await axios.post(
           `http://localhost:5000/user/register`,
-          {name,email,password},
+          {name,email,mobile_number : mobileNumber,password},
           {
             withCredentials : true,
           }
@@ -85,6 +86,22 @@ const SignUp = () => {
             className="p-2 mb-4 text-base text-gray-900 bg-[#F7F2FA] rounded-lg border-b border-[#6750A4] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+
+          {/* Mobile Input */}
+          <label
+            htmlFor="mobile"
+            className="mb-1 text-base font-medium text-gray-700"
+          >
+            Enter your Mobile
+          </label>
+          <input
+            type="text"
+            id="mobile"
+            placeholder="Mobile"
+            className="p-2 mb-4 text-base text-gray-900 bg-[#F7F2FA] rounded-lg border-b border-[#6750A4] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            value={mobileNumber}
+            onChange={(e) => setMobileNumber(e.target.value)}
           />
 
           {/* Password Input */}
