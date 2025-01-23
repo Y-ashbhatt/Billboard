@@ -238,15 +238,23 @@ const UploadImage = () => {
                     label="Choose Banner Image"
                     onFileChange={(file) => setBanner(file)}
                   />
-                  <Button
-                    label={loading ? "Just a moment, Processing..." : "Process with AI"}
-                    onClick={handleStepThree}
-                    className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-blue-700"
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    disabled={loading}
-                  />
+                  <div className="w-full flex justify-center items-center gap-5">
+                    <Button
+                      label={loading ? "Just a moment, Processing..." : "Process with AI"}
+                      onClick={handleStepThree}
+                      className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-blue-700"
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      disabled={loading}
+                    />
+                    <button
+                      className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      onClick={() => navigate('/create-banner')}
+                    >
+                      Create Banner
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
