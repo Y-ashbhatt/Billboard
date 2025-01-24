@@ -15,7 +15,7 @@ const UploadImage = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [banner, setBanner] = useState(null);
-  const [currentStep, setCurrentStep] = useState(1); // Step 1: Billboard, Step 2: Banner
+  const [currentStep, setCurrentStep] = useState(3); // Step 1: Billboard, Step 2: Banner
   const { showNotification } = useNotification();
   const navigate = useNavigate();
 
@@ -233,28 +233,29 @@ const UploadImage = () => {
                     Select the banner image you want to place on the billboard.
                     Once uploaded, you can proceed to process it with AI.
                   </p>
-
-                  <FileUploader
-                    label="Choose Banner Image"
-                    onFileChange={(file) => setBanner(file)}
-                  />
-                  <div className="w-full flex justify-center items-center gap-5">
-                    <Button
-                      label={loading ? "Just a moment, Processing..." : "Process with AI"}
-                      onClick={handleStepThree}
-                      className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-blue-700"
-                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      disabled={loading}
+                   <p className="text-gray-800 text-center text-xl">Choose Banner Image </p>
+                  <div className="w-full flex justify-center items-end gap-3">
+                    <FileUploader
+                      label=""
+                      onFileChange={(file) => setBanner(file)}
                     />
                     <button
-                      className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      className={`mt-4 px-1 min-w-[150px] h-14 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       onClick={() => navigate('/create-banner')}
                     >
                       Create Banner
                     </button>
                   </div>
+                  <Button
+                    label={loading ? "Just a moment, Processing..." : "Process with AI"}
+                    onClick={handleStepThree}
+                    className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-blue-700"
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    disabled={loading}
+                  />
+
                 </div>
               )}
             </div>
