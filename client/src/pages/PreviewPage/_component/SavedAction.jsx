@@ -5,6 +5,8 @@ import HtmlIcon from "@mui/icons-material/Html";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
+import axios from 'axios';
+import { useNotification } from "../../../context/NotificationContext";
 
 const ActionIcons = {
     whatsapp: <WhatsAppIcon style={{ color: "#25D366" }} />,
@@ -17,11 +19,21 @@ const ActionIcons = {
 const SavedAction = ({ actions, setSelectedItem }) => {
 
     const [actionData, setactionData] = useState(actions);
+    const { showNotification } = useNotification()
 
-    const handleDelete = (id) => {
-        //    Api Call to delete the action
-        const updatedActions = actionData.filter((action) => action.actionId !== id);
-        setactionData(updatedActions);
+    //    Api Call to delete the action
+    const handleDelete = async (id) => {
+        try {
+            const response = await axios.delete(`http://localhost:5000/user/delete-action/${id}`)
+            if (response.status === 201) {
+                const updatedActions = actionData.filter((action) => action.actionId !== id);
+                setactionData(updatedActions);
+                showNotification('Action removed successfully')
+            }
+        } catch (error) {
+            console.log(error)
+            showNotification('Sorry, Failed to remove action, Due to Server Error')
+        }
         console.log(actions)
 
     };
