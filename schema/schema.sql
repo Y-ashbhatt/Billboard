@@ -1,3 +1,4 @@
+CREATE DATABASE Billboard_AI;
 USE Billboard_AI;
 
 CREATE TABLE users (
@@ -25,7 +26,7 @@ CREATE TABLE campaign (
 CREATE TABLE actions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     campaign_id INT NOT NULL,
-    x_coordiante FLOAT NOT NULL,
+    x_coordinate FLOAT NOT NULL,
     y_coordinate FLOAT NOT NULL,
     action_type VARCHAR(50) NOT NULL,
     action_data JSON,

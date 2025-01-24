@@ -17,13 +17,12 @@ const Post = () => {
     useEffect(() => {
         (async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/user/getUserInfo`,{withCredentials : true});
+                const response = await axios.get(`http://localhost:5000/user/getCampaigns`,{withCredentials : true});
                 if (response.status === 200) {
                     // setImages(response.data);
-                    setImages(response.data.userInfo.processedImageData)
+                    setImages(response.data.campaigns)
                 }
             } catch (error) {
-                console.log(error);
                 showNotification('Sorry, some error occurred. Please try later.');
             }
         })();
@@ -33,7 +32,7 @@ const Post = () => {
         try {
             const response = await axios.delete(`http://localhost:5000/user/delete-billboard/${id}`,{withCredentials : true});
             if (response.status === 200) {
-                setImages(images.filter((image) => image._id !== id));
+                setImages(images.filter((image) => image.id !== id));
                 showNotification("Image deleted successfully");
             }
         } catch (error) {
@@ -73,22 +72,22 @@ const Post = () => {
                             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200"
                         >
                             <img
-                                src={item.processedImage.imageUrl}
+                                src={item.final_image}
                                 alt={`Saved Image ${index + 1}`}
                                 className="w-full h-44 object-cover"
                             />
                             <div className="p-4">
-                                <h2 className="text-lg font-semibold text-gray-800 truncate">{item.processedImage.title}</h2>
+                                <h2 className="text-lg font-semibold text-gray-800 truncate">{item.title}</h2>
                                 {/* <p className="text-sm text-gray-600 mt-2 truncate">{image.description}</p> */}
                                 <div className="flex justify-between items-center mt-4">
                                     <button
-                                        onClick={() => handleCodeIconClick(item.processedImage)}
+                                        onClick={() => handleCodeIconClick(item)}
                                         className="px-3 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition duration-200"
                                     >
                                         <CodeOffIcon fontSize="small" />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(item._id)}
+                                        onClick={() => handleDelete(item.id)}
                                         className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
                                     >
                                         <DeleteForeverIcon fontSize="small" />

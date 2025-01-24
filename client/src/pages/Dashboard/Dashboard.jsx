@@ -28,15 +28,14 @@ const Dashboard = () => {
   const getBillboardInfo = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/user/getUserInfo`,
+        `http://localhost:5000/user/getCampaigns`,
         {
           withCredentials: true,
         }
       );
       if (response.status === 200) {
-        setUserData(response.data.userInfo);
+        setUserData(response.data.campaigns);
       }
-      console.log(response.data.userInfo);
     }
     catch (error) {
       console.log("no proccessed image found")
@@ -112,23 +111,19 @@ const Dashboard = () => {
           {/* Processed Images */}
           <div className="bg-white rounded-lg shadow-lg p-4 h-fit">
             <h2 className="text-2xl mb-4">Processed Images</h2>
-            {userData && userData.processedImageData.length === 0 && <div className="bg-gray-100 p-5 rounded-2xl">
+            {userData && userData.length === 0 && <div className="bg-gray-100 p-5 rounded-2xl">
               No Images Processed yet!
             </div>
             }
-            {userData && userData.processedImageData.length > 0 && <ul className="space-y-4 bg-gray-100 p-5 rounded-2xl">
-              {userData.processedImageData.map((item, index) => (
+            {userData && userData.length > 0 && <ul className="space-y-4 bg-gray-100 p-5 rounded-2xl">
+              {userData.map((item, index) => (
                 <li key={index} className="flex items-center space-x-4">
                   <div className="w-16 h-16 rounded-full bg-gray-300">
-                    <img src={item.processedImage.imageUrl} className="w-16 h-16 rounded-full" />
+                    <img src={item.final_image} className="w-16 h-16 rounded-full" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">{item.processedImage.title}</h3>
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: item.processedImage.description,
-                      }}
-                    />
+                    <h3 className="font-semibold">{item.title}</h3>
+                    {item.description}
                   </div>
                 </li>
               ))}
@@ -144,7 +139,7 @@ const Dashboard = () => {
                   <img src="./credits.svg" alt="credits" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">{userData && userData.credits}</div>
+                  <div className="text-4xl">100</div>
                   <div className="text-lg">Remaining Credits</div>
                 </span>
               </li>
@@ -153,7 +148,7 @@ const Dashboard = () => {
                   <img src='./credits.svg' alt="pucture" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">{userData && userData.processedImageData.length}</div>
+                  <div className="text-4xl">{userData && userData.length}</div>
                   <div className="text-lg">Processed Images</div>
                 </span>
               </li>
@@ -171,7 +166,7 @@ const Dashboard = () => {
                   <img src="./ChatGptCredits.svg" alt="credits" />
                 </span>
                 <span className="">
-                  <div className="text-4xl">{userData && userData.processedImageData.length}</div>
+                  <div className="text-4xl">{userData && userData.length}</div>
                   <div className="text-lg">Billboards Transformed</div>
                 </span>
               </li>

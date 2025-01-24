@@ -50,7 +50,7 @@ const UploadImage = () => {
 
         if (response.status === 201) {
           setError(false);
-          if (response.data.billboardData.billboardImage && response.data.billboardData.segmentedImage) {
+          if (response.data.billboardImage && response.data.segmentedImage) {
             setBillboardId(response.data.id);
             setStep2Billboard(response.data.billboardImage);
             setStep2SegmentedBillboard(response.data.segmentedImage);
