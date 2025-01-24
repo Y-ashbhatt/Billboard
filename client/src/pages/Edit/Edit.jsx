@@ -14,12 +14,10 @@ const Edit = () => {
 
   const handleToolsClick = (option) => {
     if (activeTool === option && showSidebar) {
-      // If the same icon is clicked and sidebar is already open, close it
-      setShowSidebar(false);
-      setActiveTool("");
+      setShowSidebar(false); // Close sidebar
+      setActiveTool(""); // Reset active tool
     } else {
-      // Otherwise, open the sidebar and set the active tool
-      setActiveTool(option);
+      setActiveTool(option); // Open sidebar with the new tool
       setShowSidebar(true);
     }
   };
@@ -37,7 +35,7 @@ const Edit = () => {
 
         {/* Sidebar */}
         <div
-          className={`relative h-[calc(100%-0px)] max-w-[320px] bg-[var(--color-1)] border-r border-[var(--color-4)] top-0 box-border z-[999999] overflow-hidden transition-transform duration-300 ${
+          className={`relative h-[calc(100%-0px)] min-w-[320px] bg-[var(--color-1)] border-r border-[var(--color-4)] top-0 box-border z-[999999] overflow-hidden transition-transform duration-300 ${
             showSidebar ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -61,12 +59,24 @@ const Edit = () => {
           {/* Sidebar Content */}
           {showSidebar && (
             <div className="p-3">
-              {activeTool === "setting" && <Setting />}
-              {activeTool === "template" && <Template />}
-              {activeTool === "text" && <TextTool />}
-              {activeTool === "object" && <ObjectTool />}
-              {activeTool === "upload" && <UploadTool />}
-              {activeTool === "image" && <ImageTool />}
+              {activeTool === "setting" && (
+                <Setting closeSidebar={closeSidebar} />
+              )}
+              {activeTool === "template" && (
+                <Template closeSidebar={closeSidebar} />
+              )}
+              {activeTool === "text" && (
+                <TextTool closeSidebar={closeSidebar} />
+              )}
+              {activeTool === "object" && (
+                <ObjectTool closeSidebar={closeSidebar} />
+              )}
+              {activeTool === "upload" && (
+                <UploadTool closeSidebar={closeSidebar} />
+              )}
+              {activeTool === "image" && (
+                <ImageTool closeSidebar={closeSidebar} />
+              )}
             </div>
           )}
         </div>

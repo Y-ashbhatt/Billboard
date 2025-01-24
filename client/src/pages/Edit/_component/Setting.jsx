@@ -1,17 +1,16 @@
 import React from "react";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 
-const Setting = () => {
+const Setting = ({ closeSidebar }) => {
   return (
     <div className="p-4">
       <div className="bg-white shadow-md rounded-md">
         <p className="text-lg font-bold inline-block uppercase  mb-4">Text</p>
-        <span className="mb-2">
+        <button onClick={closeSidebar} className="mb-2">
           <KeyboardDoubleArrowLeftIcon
-            onClick={closeSidebar}
             style={{ color: "black", margin: "0px 0px 6px 170px" }}
           />
-        </span>
+        </button>
         <div>
           {/* <div className="bg-gray-50 p-4 rounded-md mb-4">
               <button
