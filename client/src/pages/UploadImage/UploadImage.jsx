@@ -12,6 +12,8 @@ const UploadImage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [billboard, setBillboard] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [banner, setBanner] = useState(null);
   const [currentStep, setCurrentStep] = useState(3); // Step 1: Billboard, Step 2: Banner
   const { showNotification } = useNotification();
@@ -37,7 +39,9 @@ const UploadImage = () => {
         const response = await axios.post(
           `http://localhost:5000/user/process-billboard`,
           {
-            billboardImage: billboardURL
+            billboardImage: billboardURL,
+            title,
+            description
           },
           {
             withCredentials: true,
@@ -46,10 +50,10 @@ const UploadImage = () => {
 
         if (response.status === 201) {
           setError(false);
-          if (response.data.billboardData.billboardImage && response.data.billboardData.segmentedImage) {
-            setBillboardId(response.data.billboardData._id);
-            setStep2Billboard(response.data.billboardData.billboardImage);
-            setStep2SegmentedBillboard(response.data.billboardData.segmentedImage);
+          if (response.data.billboardImage && response.data.segmentedImage) {
+            setBillboardId(response.data.id);
+            setStep2Billboard(response.data.billboardImage);
+            setStep2SegmentedBillboard(response.data.segmentedImage);
           }
           setCurrentStep(2);
           setLoading(false);
@@ -65,7 +69,7 @@ const UploadImage = () => {
         const response = await axios.post(
           `http://localhost:5000/user/process-banner`,
           {
-            billboardId,
+            campaignId: billboardId,
             billboardImage: step2Billboard,
             bannerImage: bannerURL
           },
@@ -73,12 +77,12 @@ const UploadImage = () => {
             withCredentials: true,
           }
         );
-        console.log(response.data);
+
         if (response.status === 201) {
           setError(false);
           // Store the image in sessionStorage
           if (response.data) {
-            navigate('/success', { state: { finalBillboard: response.data.billboardData.processedImage.imageUrl, billboardId: response.data.billboardData._id } });
+            navigate('/success', { state: { finalBillboard: response.data.processedImage, billboardId } });
           }
         }
       }
@@ -165,6 +169,26 @@ const UploadImage = () => {
                     Upload the image that you want to use for the billboard.Once uploaded, proceed to the next step to upload yourbanner.
                   </p>
                   <FileUploader label="Choose Billboard Image" onFileChange={(file) => { setBillboard(file) }} />
+                  <div
+                  className="mt-3"
+                  >
+                  <input
+                    type="text"
+                    id="title"
+                    placeholder="Title"
+                    className="w-full p-2 mb-6 text-base text-gray-900 bg-[#F7F2FA] rounded-lg  border-b border-[#6750A4] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                  <input
+                    type="description"
+                    id="description"
+                    placeholder="Description"
+                    className="w-full p-2 mb-6 text-base text-gray-900 bg-[#F7F2FA] rounded-lg  border-b border-[#6750A4] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                  </div>
                   <Button label={loading ? "Processing..." : "Process with AI"} onClick={handleStepOne}
                     className={`mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow ${loading
                       ? "opacity-50 cursor-not-allowed"

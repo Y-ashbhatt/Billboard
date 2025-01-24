@@ -1,114 +1,106 @@
-const billboardModel = require('../models/Billboard');
-const userModel = require('../models/User');
-const mongoose = require('mongoose')
+const { addBillboard, addBanner, getCampigns, addAction, deleteCampaign, getCampaign } = require('./dbController');
+const { verifyActionData } = require('../utilities/verifyActionData');
 
-exports.getProcessedBillboards = async (req,res,next) => {
+exports.getCampaigns = async (req, res, next) => {
     try {
-        const email = req.user.email;
-        const userInfo = await userModel.findOne({email}).populate('Billboard').select('-password');
-        const processedImageData = userInfo.Billboard.filter((item)=>{
-            if(item.processedImage.imageUrl === "") return false;
-            else return true;
-        });
-        if(userInfo.length === 0) return res.status(404).json({msg : "No Processed Images"});
-        res.status(200).json({userInfo : {processedImageData, credits : userInfo.credits}});
+        const { id } = req.user;
+        const campaigns = await getCampigns(id);
+        const nonEmptyCampaigns = campaigns.filter((item) => (item.final_image !== null))
+        return res.status(200).json({ campaigns: nonEmptyCampaigns });
     } catch (error) {
         next(error);
     }
 }
 
-exports.processBillboard = async (req,res,next) => {
+exports.getCampaign = async (req,res,next) => {
     try {
-        const { billboardImage } = req.body;
-        const { email } = req.user;
-        if(!billboardImage) return res.status(400).json({msg : "Image is required"});
-        const userCheck = await userModel.findOne({email});
-        if(userCheck.credits === 0) return res.status(400).json({msg : "Not enough credits"});
+        const { id } = req.user;
+        const { campaignId } = req.body;
+        if(!campaignId) return res.status(400).json({msg : "campaign is required"});
+
+        const result = await getCampaign(campaignId,id);
+        if(!result) return res.status(400).json({msg : "You are not authorized to view this resource"});
+        res.status(200).json({campaign : result.campaign, actions : result.actions});
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.processBillboard = async (req, res, next) => {
+    try {
+        const { email, id } = req.user;
+
+        const { billboardImage, title, description } = req.body;
+        if (!billboardImage) return res.status(400).json({ msg: "Image is required" });
+
         //code for flask API call here
-        const response = await fetch("https://0342-34-91-57-90.ngrok-free.app/generate-billboard", {
+
+        const response = await fetch(`${process.env.FLASK_BACKEND_BASE_URL}/generate-billboard`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body : JSON.stringify({ billboardUrl : billboardImage })
+            body: JSON.stringify({ billboardUrl: billboardImage })
         });
         const imageData = await response.json();
         const segmentedImage = imageData.segmentedBillboardUrl;
 
-        const billboardData = await billboardModel.create({billboardImage,segmentedImage});
-        const user = await userModel.findOneAndUpdate({email},{$push : {Billboard : billboardData._id}});
+        //api call code ends here
 
-        return res.status(201).json({billboardData});
+        const campaignId = await addBillboard(id, billboardImage, segmentedImage, title, description);
+        if (!campaignId) return res.status(400).json({ msg: "Error creating campaign" });
+        return res.status(201).json({ id: campaignId, billboardImage, segmentedImage });
     }
-    catch (error){
+    catch (error) {
         next(error)
     }
 }
 
-exports.processBanner = async (req,res,next) => {
+exports.processBanner = async (req, res, next) => {
     try {
-        const { email } = req.user;
-        const { billboardId, bannerImage, billboardImage } = req.body;
-        if(!bannerImage) return res.status(400).json({msg : "Image is required"});
+        const { campaignId, bannerImage, billboardImage } = req.body;
+        if (!bannerImage || !campaignId) return res.status(400).json({ msg: "Image and Campaign id is required" });
 
-        const response = await fetch("https://0342-34-91-57-90.ngrok-free.app/generate-banner", {
+        const response = await fetch(`${process.env.FLASK_BACKEND_BASE_URL}/generate-banner`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body : JSON.stringify({ billboardUrl : billboardImage, bannerUrl : bannerImage })
+            body: JSON.stringify({ billboardUrl: billboardImage, bannerUrl: bannerImage })
         });
-        const imageData =  await response.json();
+        const imageData = await response.json();
         const processedImage = imageData.finalBillboardUrl;
-        const billboardData = await billboardModel.findOneAndUpdate({_id : billboardId},{$set : {bannerImage,processedImage : {imageUrl : processedImage}}},{returnDocument : 'after'});
-        const user = await userModel.findOneAndUpdate({email},{$inc : {credits : -10}});
-        return res.status(201).json({billboardData});
+        const result = await addBanner(campaignId, bannerImage, processedImage);
+        if (result.affectedRows === 0) return res.status(400).json({ msg: "No record with given id found" });
+        res.status(201).json({ processedImage });
     }
-    catch (error){
+    catch (error) {
         next(error)
     }
 }
 
-exports.saveFinalBillboardData = async (req,res,next) => {
+exports.deleteBillboard = async (req, res, next) => {
     try {
-       const { billboardId, title, description, tags, link, type } = req.body;
+        const { id } = req.user;
+        const billboardId = req.params.id;
 
-       if (!billboardId || !mongoose.Types.ObjectId.isValid(billboardId)) {
-        return res.status(400).json({ msg: "Invalid or missing billboardId" });
+        const deletedBillboard = await deleteCampaign(billboardId,id);
+        if(deletedBillboard) return res.status(200).json({ msg: "Billboard Deleted Successfully" });
+        res.status(400).json({ msg: "You are not authorized to delete this resource" })
+    } catch (error) {
+        next(error)
     }
-       const billboardData = await billboardModel.findByIdAndUpdate(billboardId,{$set : {
-            'processedImage.title': title,
-            'processedImage.description': description,
-            'processedImage.tags': tags,
-            'processedImage.link': link,
-            'processedImage.type': type,
-       }
-       }, {returnDocument : 'after'});
-       return res.status(200).json({msg : "Saved"}); 
+}
+
+exports.addAction = async (req, res, next) => {
+    try {
+        const { billboardId, x, y, action_type, action_data } = req.body;
+        if (!billboardId || !x || !y || !action_type || !action_data) return res.status({ msg: "Information not complete" });
+
+        const data = verifyActionData(action_type, action_data);
+        if (data.length === 0) return res.status(400).json({ msg: "Action data is invalid" })
+        const jsonData = JSON.stringify(data);
+
+        const action = await addAction(billboardId, x, y, action_type, jsonData);
+        if (action > 0) return res.status(201).json({ msg: "Action created successfully", actionId: action });
+        res.status(400).json({ msg: "Error adding action" });
     } catch (error) {
         next(error);
-    }
-}
-
-exports.deleteBillboard = async (req,res,next) => {
-    try {
-        const { email } = req.user;
-        const id = req.params.id;
-        const flag = false;
-        
-        if (!id || !mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ msg: "Invalid or missing id" });
-
-        let user = await userModel.findOne({email});
-        user.Billboard.map((item)=>{
-            if(item == id) {
-                flag = true;
-            }
-        })
-        
-        if(flag === true){
-            const deletedBillboard = await billboardModel.deleteOne({_id : id});
-            return res.status(200).json({msg : "Billboard Deleted Successfully"});
-        }
-        else{
-            return res.status(400).json({msg : "You are not authorized to delete this resource"})
-        }
-    } catch (error) {
-        next(error)
     }
 }

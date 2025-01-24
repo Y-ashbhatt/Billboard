@@ -3,11 +3,12 @@ import { useNavigate,useLocation } from "react-router-dom";
 import Button from "../../components/Button";
 
 const SuccessPage = () => {
+  
   const location = useLocation();
   const finalBillboard = location.state?.finalBillboard;
   const billboardId = location.state?.billboardId;
   const navigate = useNavigate();
-  console.log(billboardId);
+  
   return (
     // <div className="h-screen w-screen bg-[url('/back.png')] bg-cover bg-center flex flex-col items-center justify-center text-center">
     <div className="h-screen w-screen bg-white bg-cover bg-center flex flex-col items-center justify-center text-center">

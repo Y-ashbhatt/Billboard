@@ -18,8 +18,7 @@ const PreviewPage = () => {
   const location = useLocation();
   const finalBillboardImage = location.state?.finalBillboard || '/billboardimg.jpeg';
   const billboardId = location.state?.billboardId;
-  console.log(billboardId);
-  const navigate = useNavigate('/upload')
+  const navigate = useNavigate()
   const { showNotification } = useNotification()
   const [imageType, setimageType] = useState('png')
   const [currentStep, setcurrentStep] = useState(1)
@@ -67,46 +66,38 @@ const PreviewPage = () => {
 
   // Funtion to save the details in the database 
   const handleSubmit = async (e) => {
-
-    // if (!currentAction.title || !currentAction.tags || !currentAction.link || !currentAction.description || !currentAction.type) {
-    //   showNotification('Please Fill All Information')
-    //   return
-    // }
-    try {
-      let body = actions;
-      body = { ...body, billboardId: billboardId }
-      const response = await axios.post('http://localhost:5000/user/save-final-billboard', body, { withCredentials: true });
-      if (response.status === 200) {
-        showNotification('Image details saved successfully!');
-        setcurrentStep(2)
-      }
-    } catch (error) {
-      console.error('Error saving data:', error);
-      showNotification('Sorry,There was an error saving image details.');
-    }
+    showNotification('Image details saved successfully!');
+    navigate('/dashboard');
   };
 
 
-  const handleSaveAction = () => {
+  const handleSaveAction = async () => {
     if (!currentAction.actionType) {
       showNotification("Please fill out the action type before saving.");
       return;
     }
-    setActions((prev) => [...prev, currentAction]);
-    setcurrentAction({
-      coordinate: { x: 0, y: 0 },
-      actionType: "",
-      textFormat: "",
-      customhtml: "",
-      whatsappnumber: "",
-      mail: "",
-      title: "",
-      link: "",
-      description: "",
-    });
-    showNotification('Action Added Sucessfully')
-    console.log(actions)
-    setCurrentCoordinates({ x: 0, y: 0 })
+    try {
+      const body = { billboardId, x: currentCoordinates.x, y: currentCoordinates.y, action_type: currentAction.actionType, action_data: currentAction }
+      const response = await axios.post('http://localhost:5000/user/save-action', body, { withCredentials: true });
+      if (response.status === 201) {
+        setActions((prev) => [...prev, { ...currentAction, actionId: response.data.actionId }]);
+        setcurrentAction({
+          coordinate: { x: 0, y: 0 },
+          actionType: "",
+          textFormat: "",
+          customhtml: "",
+          whatsappnumber: "",
+          mail: "",
+          title: "",
+          link: "",
+          description: "",
+        });
+        setCurrentCoordinates({ x: 0, y: 0 })
+        showNotification('Action Added Sucessfully')
+      }
+    } catch (error) {
+      showNotification("Error Saving Action" + error.message);
+    }
   }
 
 
@@ -157,7 +148,7 @@ const PreviewPage = () => {
     setSelectedItem(item);
   };
 
-  
+
   const closePopup = () => {
     setSelectedItem(null);
   };
