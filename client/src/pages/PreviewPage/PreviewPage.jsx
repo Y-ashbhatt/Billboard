@@ -10,6 +10,7 @@ import { Info as InfoIcon, Link as LinkIcon, Description as DescriptionIcon, Htm
 import { MenuItem, FormControl, InputLabel, Select, Box } from '@mui/material';
 import Popup from './_component/Popup';
 import AllOutIcon from '@mui/icons-material/AllOut';
+import SavedAction from './_component/SavedAction';
 
 
 
@@ -165,7 +166,7 @@ const PreviewPage = () => {
             <div className="text-center mb-4">
               <h2 className="text-2xl ">Preview Image</h2>
               <div className="mt-4 px-8 ">
-                <img src={finalBillboardImage} alt="Billboard Preview" className=" h-[70vh] rounded-md block mx-auto" />
+                <img src={finalBillboardImage} alt="Billboard Preview" className=" w-full rounded-md block mx-auto" />
 
               </div>
               <div className="mt-4 ">
@@ -198,8 +199,9 @@ const PreviewPage = () => {
             <h1 className='text-[27px] underline text-gray-700'>Make Image Clickable</h1>
             <div className="flex justify-evenly gap-4 p-4 w-full bg-gray-50 rounded-lg shadow-lg">
               <div className="mt-4 w-1/2 mx-8 relative">
+                {/* Image to mark coordinates */}
                 <img src={finalBillboardImage} alt="Billboard Preview" className=" w-full rounded-md block mx-auto" onClick={handleImageClick} />
-
+                {/* Marking Points where action have been added */}
                 {actions.map((item, index) => (
                   <div
                     key={index}
@@ -215,7 +217,7 @@ const PreviewPage = () => {
                   </div>
                 ))}
 
-
+                {/* Pointer to highlight the area to add action */}
                 <div
                   className="absolute"
                   style={{
@@ -230,16 +232,17 @@ const PreviewPage = () => {
                 </div>
               </div>
 
+              {/* Pop-Up Model to Show Action Details */}
               {selectedItem && (
                 <Popup
-                  data={selectedItem} // Pass the selected item's data as props
-                  onClose={closePopup} // Pass the closePopup function as props
+                  data={selectedItem}
+                  onClose={closePopup}
                 />
               )}
 
               <div className="w-full max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
 
-                {/* Toggle Button */}
+                {/* Button to Add Actions */}
                 <button
                   onClick={() => setIsTracking(true)}
                   className="w-full text-sm font-medium bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-2 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-purple-300 mb-4"
@@ -247,12 +250,17 @@ const PreviewPage = () => {
                   {isTracking ? 'Note: Click on the image area to add an action' : 'Add Action'}
                 </button>
 
-                {/* Additional Options */}
+                {/* Saved Action Component to view saved action */}
+                {!isTracking && actions.length > 0 && (
+                  <SavedAction actions={actions} setSelectedItem={setSelectedItem} />
+                )}
+
+                {/* Additional Options to Add Actions */}
                 {isTracking && (
                   <div className='flex flex-col justify-between h-full'>
                     <div className="mt-6">
 
-                      {/* Dropdown */}
+                      {/* Dropdown to select action type*/}
                       <div className="mb-6">
                         <FormControl fullWidth variant="outlined" className="w-[60%]">
                           <InputLabel id="section-action-label" className="text-gray-700">
@@ -304,12 +312,11 @@ const PreviewPage = () => {
                         </FormControl>
                       </div>
 
-
-                      {/* Input Form Placeholder */}
-
+                      {/* Input Form to fill the details based on selected actiontype */}
 
                       <div className="mt-4 p-6 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-700 shadow-sm mb-8">
 
+                        {/* Product actiontype details */}
                         {currentAction.actionType === 'product' && (
                           <>
                             <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
@@ -369,7 +376,7 @@ const PreviewPage = () => {
                             </div>
                           </>
                         )}
-
+                        {/* OptionForm actiontype details */}
                         {currentAction.actionType === 'optionform' && (
                           <div>
                             <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
@@ -388,7 +395,7 @@ const PreviewPage = () => {
                             />
                           </div>
                         )}
-
+                        {/* CustomHtml actiontype details */}
                         {currentAction.actionType === 'customhtml' && (
                           <div>
                             <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
@@ -402,7 +409,7 @@ const PreviewPage = () => {
                             />
                           </div>
                         )}
-
+                        {/* Whatsapp actiontype details */}
                         {currentAction.actionType === 'whatsapp' && (
                           <div>
                             <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
@@ -422,7 +429,7 @@ const PreviewPage = () => {
                             />
                           </div>
                         )}
-
+                        {/* Mail actiontype details */}
                         {currentAction.actionType === 'mail' && (
                           <div>
                             <h3 className="text-lg  text-purple-700 mb-5 text-left flex items-center">
@@ -443,7 +450,7 @@ const PreviewPage = () => {
                           </div>
                         )}
                       </div>
-
+                      {/* Save button to save action details */}
                       <button
                         className="w-fit text-sm font-medium bg-purple-600 text-white px-6 py-3 block rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-300"
                         onClick={handleSaveAction}
