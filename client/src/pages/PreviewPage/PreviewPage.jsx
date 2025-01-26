@@ -95,7 +95,7 @@ const PreviewPage = () => {
         });
         setCurrentCoordinates({ x: 0, y: 0 })
         showNotification('Action Added Sucessfully')
-        setIsTracking(false)
+        setIsTracking(false);
       }
     } catch (error) {
       showNotification("Error Saving Action" + error.message);
