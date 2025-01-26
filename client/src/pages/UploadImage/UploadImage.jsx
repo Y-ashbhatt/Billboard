@@ -15,7 +15,7 @@ const UploadImage = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [banner, setBanner] = useState(null);
-  const [currentStep, setCurrentStep] = useState(3); // Step 1: Billboard, Step 2: Banner
+  const [currentStep, setCurrentStep] = useState(1); // Step 1: Billboard, Step 2: Banner
   const { showNotification } = useNotification();
   const navigate = useNavigate();
 
