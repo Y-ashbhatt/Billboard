@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import apibaseurl from '../../apiConfig/api';
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
@@ -14,15 +14,15 @@ import SavedAction from './_component/SavedAction';
 
 
 
-const PreviewPage = () => {
+const Campaign = () => {
 
   const location = useLocation();
-  const finalBillboardImage = location.state?.finalBillboard || '/billboardimg.jpeg';
   const billboardId = location.state?.billboardId;
   const navigate = useNavigate()
   const { showNotification } = useNotification()
   const [imageType, setimageType] = useState('png')
   const [currentStep, setcurrentStep] = useState(1)
+  const [campaignInfo, setCampaignInfo] = useState(null);
 
   // Managing States for marking coordinate
   const [isTracking, setIsTracking] = useState(false);
@@ -41,6 +41,38 @@ const PreviewPage = () => {
   });
   const [coordinatesLinks, setCoordinatesLinks] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
+
+  const getBillboardInfo = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/user/get-campaign`,
+        {
+          campaignId : billboardId
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.status === 200) {
+        setCampaignInfo(response.data.campaign);
+        const existingActions = [];
+        response.data.actions.map((item) => {
+          existingActions.push({ coordinate: { x: item.x_coordinate, y: item.y_coordinate }, actionType: item.action_type, ...item.action_data,actionId : item.id });
+        })
+        console.log(existingActions);
+        setActions(existingActions);
+      }
+    }
+    catch (error) {
+      console.log("No Campaign Found")
+    }
+  }
+
+  useEffect(() => {
+    getBillboardInfo();
+  }, []);
+
+
   // const [urlInput, setUrlInput] = useState(''); 
 
   // Funtion to handle form input field
@@ -105,12 +137,12 @@ const PreviewPage = () => {
 
   // Funtion to download Preview Image
   const handleDownload = async () => {
-    if (!finalBillboardImage) {
+    if (!campaignInfo || !campaignInfo.final_image) {
       showNotification('No Image Found To Download');
       return;
     }
     try {
-      const response = await fetch(finalBillboardImage);
+      const response = await fetch(campaignInfo.final_image);
       if (!response.ok) {
         showNotification('Failed to fetch image from the server.');
         return;
@@ -167,9 +199,9 @@ const PreviewPage = () => {
         {currentStep == 1 && (
           <div className="flex-1 bg-gray-100 w-1/2 p-4 rounded-lg shadow-lg">
             <div className="text-center mb-4">
-              <h2 className="text-2xl ">Preview Image</h2>
+              <h2 className="text-2xl ">Campaign Image</h2>
               <div className="mt-4 px-8 ">
-                <img src={finalBillboardImage} alt="Billboard Preview" className=" w-full rounded-md block mx-auto" />
+                <img src={campaignInfo && campaignInfo.final_image} alt="Billboard Preview" className=" w-full rounded-md block mx-auto" />
 
               </div>
               <div className="mt-4 ">
@@ -189,7 +221,7 @@ const PreviewPage = () => {
                 </select>
                 <button type="button" className="bg-purple-600 text-white py-2 px-7 rounded-md hover:bg-gray-400 ml-8 focus:outline-none"
                   onClick={() => setcurrentStep(2)}  >
-                  Add Interactivity
+                  Edit Interactivity
                 </button>
               </div>
             </div>
@@ -199,11 +231,11 @@ const PreviewPage = () => {
         {/* Right Section with Input Fields */}
         {currentStep == 2 && (
           <>
-            <h1 className='text-[27px] underline text-gray-700'>Make Image Clickable</h1>
+            <h1 className='text-[27px] underline text-gray-700'>Edit image Interactivity</h1>
             <div className="flex justify-evenly gap-4 p-4 w-full bg-gray-50 rounded-lg shadow-lg">
               <div className="mt-4 w-1/2 mx-8 relative">
                 {/* Image to mark coordinates */}
-                <img src={finalBillboardImage} alt="Billboard Preview" className=" w-full rounded-md block mx-auto" onClick={handleImageClick} />
+                <img src={campaignInfo && campaignInfo.final_image} alt="Billboard Image" className=" w-full rounded-md block mx-auto" onClick={handleImageClick} />
                 {/* Marking Points where action have been added */}
                 {actions.map((item, index) => (
                   <div
@@ -455,21 +487,21 @@ const PreviewPage = () => {
                       </div>
                       {/* Save button to save action details */}
                       <div className='flex gap-x-4'>
-                      <button
-                        className="w-fit h-fit text-sm font-medium bg-purple-600 text-white px-6 py-3 block rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-300"
-                        onClick={handleSaveAction}
-                      >
-                        Save Action
-                      </button>
-                      <button
-                      className="w-fit h-fit text-sm font-medium bg-red-600 mb-10 text-white px-6 py-3 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-300"
-                      onClick={()=>setIsTracking(false)}
-                    >
-                      Cancel
-                    </button>
+                        <button
+                          className="w-fit h-fit text-sm font-medium bg-purple-600 text-white px-6 py-3 block rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-300"
+                          onClick={handleSaveAction}
+                        >
+                          Save Action
+                        </button>
+                        <button
+                          className="w-fit h-fit text-sm font-medium bg-red-600 mb-10 text-white px-6 py-3 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-300"
+                          onClick={() => setIsTracking(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
-                    </div>
-                    
+
                   </div>
                 )}
 
@@ -491,9 +523,4 @@ const PreviewPage = () => {
   );
 };
 
-export default PreviewPage;
-
-
-
-
-
+export default Campaign;
