@@ -24,7 +24,7 @@ const SavedAction = ({ actions, setSelectedItem, billboardId, handleDeleteAction
     //    Api Call to delete the action
     const handleDelete = async (id) => {
         try {
-            const response = await axios.delete(`http://localhost:5000/user/delete-action/${id}/${billboardId}`,{withCredentials:true});
+            const response = await axios.delete(`http://localhost:5000/user/delete-action/${id}/${billboardId}`,{withCredentials : true})
             if (response.status === 200) {
                 const updatedActions = actionData.filter((action) => action.actionId !== id);
                 setactionData(updatedActions);
@@ -32,6 +32,7 @@ const SavedAction = ({ actions, setSelectedItem, billboardId, handleDeleteAction
                 showNotification('Action removed successfully')
             }
         } catch (error) {
+            console.log(error)
             showNotification('Sorry, Failed to remove action, Due to Server Error')
         }
         console.log(actions)

@@ -1,4 +1,4 @@
-const { addBillboard, addBanner, getCampigns, addAction, deleteCampaign, getCampaign } = require('./dbController');
+const { addBillboard, addBanner, getCampigns, addAction, deleteCampaign, getCampaign, deleteAction } = require('./dbController');
 const { verifyActionData } = require('../utilities/verifyActionData');
 
 exports.getCampaigns = async (req, res, next) => {
@@ -12,15 +12,15 @@ exports.getCampaigns = async (req, res, next) => {
     }
 }
 
-exports.getCampaign = async (req,res,next) => {
+exports.getCampaign = async (req, res, next) => {
     try {
         const { id } = req.user;
         const { campaignId } = req.body;
-        if(!campaignId) return res.status(400).json({msg : "campaign is required"});
+        if (!campaignId) return res.status(400).json({ msg: "campaign is required" });
 
-        const result = await getCampaign(campaignId,id);
-        if(!result) return res.status(400).json({msg : "You are not authorized to view this resource"});
-        res.status(200).json({campaign : result.campaign, actions : result.actions});
+        const result = await getCampaign(campaignId, id);
+        if (!result) return res.status(400).json({ msg: "You are not authorized to view this resource" });
+        res.status(200).json({ campaign: result.campaign, actions: result.actions });
     } catch (error) {
         next(error);
     }
@@ -40,14 +40,17 @@ exports.processBillboard = async (req, res, next) => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ billboardUrl: billboardImage })
         });
-        const imageData = await response.json();
-        const segmentedImage = imageData.segmentedBillboardUrl;
+        if (response.ok) {
+            const imageData = await response.json();
+            const segmentedImage = imageData.segmentedBillboardUrl;
 
-        //api call code ends here
-
-        const campaignId = await addBillboard(id, billboardImage, segmentedImage, title, description);
-        if (!campaignId) return res.status(400).json({ msg: "Error creating campaign" });
-        return res.status(201).json({ id: campaignId, billboardImage, segmentedImage });
+            const campaignId = await addBillboard(id, billboardImage, segmentedImage, title, description);
+            if (!campaignId) return res.status(400).json({ msg: "Error creating campaign" });
+            return res.status(201).json({ id: campaignId, billboardImage, segmentedImage });
+        }
+        else {
+            return res.status(500).json({ msg: "Error processing image" });
+        }
     }
     catch (error) {
         next(error)
@@ -80,8 +83,8 @@ exports.deleteBillboard = async (req, res, next) => {
         const { id } = req.user;
         const billboardId = req.params.id;
 
-        const deletedBillboard = await deleteCampaign(billboardId,id);
-        if(deletedBillboard) return res.status(200).json({ msg: "Billboard Deleted Successfully" });
+        const deletedBillboard = await deleteCampaign(billboardId, id);
+        if (deletedBillboard) return res.status(200).json({ msg: "Billboard Deleted Successfully" });
         res.status(400).json({ msg: "You are not authorized to delete this resource" })
     } catch (error) {
         next(error)
@@ -102,5 +105,19 @@ exports.addAction = async (req, res, next) => {
         res.status(400).json({ msg: "Error adding action" });
     } catch (error) {
         next(error);
+    }
+}
+
+exports.deleteAction = async (req, res, next) => {
+    try {
+        const { id } = req.user;
+        const billboardId = req.params.billboardId
+        const actionId = req.params.actionId;
+
+        const deletedAction = await deleteAction(id, billboardId, actionId);
+        if (deletedAction) return res.status(200).json({ msg: "Action Deleted Successfully" });
+        res.status(400).json({ msg: "Action not found or You are not authorized to delete this action" })
+    } catch (error) {
+        next(error)
     }
 }

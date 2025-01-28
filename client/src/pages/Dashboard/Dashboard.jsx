@@ -117,7 +117,7 @@ const Dashboard = () => {
             }
             {userData && userData.length > 0 && <ul className="space-y-4 bg-gray-100 p-5 rounded-2xl">
               {userData.map((item, index) => (
-                <li key={index} className="flex items-center space-x-4">
+                <li key={index} className="flex items-center space-x-4" onClick= {() => navigate('/campaign', {state : {billboardId : item.id}})}>
                   <div className="w-16 h-16 rounded-full bg-gray-300">
                     <img src={item.final_image} className="w-16 h-16 rounded-full" />
                   </div>

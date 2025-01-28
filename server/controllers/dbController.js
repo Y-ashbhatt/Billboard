@@ -146,3 +146,22 @@ exports.addAction = async (billboard_id,x,y,action_type,action_data) => {
         throw new Error("Error adding action");
     }
 }
+
+exports.deleteAction = async (userId,billboardId,actionId) => {
+    try {
+        const [ row ] = await db.query(`
+        SELECT * FROM campaign
+        WHERE addedBy = ? AND id = ?
+        `,[userId,billboardId]);
+        if(row.length > 0) {
+        const [result] = await db.query(`
+            DELETE FROM actions
+            WHERE id = ? AND campaign_id = ?
+        `, [actionId,billboardId]);
+        return result.affectedRows > 0;
+        }
+        else return false;
+    } catch (error) {
+        throw new Error(`Error deleting Action : ${error.message}`);
+    }
+};

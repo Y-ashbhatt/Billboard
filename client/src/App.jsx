@@ -14,6 +14,7 @@ import FabricCanvas from "./components/CanvasArea";
 import DrawingBoard from "./pages/Draw/DrawingBoard";
 import Edit from "./pages/Edit/Edit";
 import Post from "./pages/Post/Post";
+import Campaign from "./pages/Campaign/Campaign";
 
 
 
@@ -44,6 +45,7 @@ const App = () => {
           <Route path="/draw" element={<DrawingBoard />} />
           <Route path="/edit" element={<Edit />} />
           <Route path="/post" element={<Post />} />
+          <Route path="/campaign" element={<Campaign />} />
         </Routes>
       </NotificationProvider>
     </>
