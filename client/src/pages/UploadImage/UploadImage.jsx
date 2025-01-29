@@ -80,7 +80,7 @@ const UploadImage = () => {
 
         if (response.status === 201) {
           setError(false);
-          // Store the image in sessionStorage
+        
           if (response.data) {
             navigate('/success', { state: { finalBillboard: response.data.processedImage, billboardId } });
           }
