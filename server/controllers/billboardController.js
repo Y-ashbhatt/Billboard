@@ -49,7 +49,7 @@ exports.processBillboard = async (req, res, next) => {
             return res.status(201).json({ id: campaignId, billboardImage, segmentedImage });
         }
         else {
-            return res.status(500).json({ msg: "Error processing image" });
+            return res.status(500).json({ msg: response });
         }
     }
     catch (error) {
