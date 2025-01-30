@@ -1,10 +1,22 @@
 import React, { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import '../../assets/css/style.css'
+import '../../assets/css/light.css'
+// import '../../assets/css/dark.css'
+import '../../assets/css/plugins.min.css'
 
 const BannerCreator = () => {
-
     const location = useLocation();
 
+    useEffect(() => {
+        // Save original overflow style
+        document.body.classList.add("banner-page");
+
+        return () => {
+            // Remove the class when the component unmounts
+            document.body.classList.remove("banner-page");
+        };
+    }, []);
     // Parse the query parameters
     const queryParams = new URLSearchParams(location.search);
     const billboardId = queryParams.get("billboardId");

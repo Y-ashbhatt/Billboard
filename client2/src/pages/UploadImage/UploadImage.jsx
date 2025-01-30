@@ -7,6 +7,7 @@ import axios from "axios";
 import Error from "../../components/Error";
 import Sidebar from "../../components/Sidebar";
 import { uploadImageToCloudinary } from './../../config/uploadToCloudinary';
+import apibaseurl from '../../apiConfig/api';
 
 const UploadImage = () => {
   const [loading, setLoading] = useState(false);
@@ -33,10 +34,14 @@ const UploadImage = () => {
     if (image && billboardIdFromSession && billboardImageFromSession) {
       setBillboardId(billboardIdFromSession)
       setStep2Billboard(billboardImageFromSession)
-      setCurrentStep(3);
       setBanner(image);
-      console.log("Image retrieved from sessionStorage:", image);
+      setCurrentStep(3);
     }
+    return () => {
+      sessionStorage.removeItem("billboardId");
+      sessionStorage.removeItem("billboardImage");
+      sessionStorage.removeItem("downloadedImage");
+    };
   }, [image]);
 
 
@@ -53,7 +58,7 @@ const UploadImage = () => {
         const billboardURL = await uploadImageToCloudinary(billboard);
 
         const response = await axios.post(
-          `http://localhost:5000/user/process-billboard`,
+          `${apibaseurl}user/process-billboard`,
           {
             billboardImage: billboardURL,
             title,
@@ -87,7 +92,7 @@ const UploadImage = () => {
         console.log(billboardId);
         console.log(step2Billboard)
         const response = await axios.post(
-          `http://localhost:5000/user/process-banner`,
+          `${apibaseurl}user/process-banner`,
           {
             campaignId: billboardId,
             billboardImage: step2Billboard,
